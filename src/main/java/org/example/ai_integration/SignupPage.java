@@ -148,7 +148,7 @@ public class SignupPage extends Application {
 
     private Connection getConnection() throws SQLException {
         // Replace with your DB details
-        String url  = "jdbc:mysql://127.0.0.1:3306/your_database?useSSL=false&serverTimezone=UTC";
+        String url  = "jdbc:mysql://127.0.0.1:3306/notesdata";
         String user = "root";
         String pass = "Minecr@ft1";
 
@@ -156,22 +156,20 @@ public class SignupPage extends Application {
         // try { Class.forName("com.mysql.cj.jdbc.Driver"); } catch (ClassNotFoundException ignored) {}
         return DriverManager.getConnection(url, user, pass);
     }
-
+    // Insert the user data into the database from the java form
     private void insertUser(String email, String first, String last, LocalDate dob, String passwordHash) throws SQLException {
-        String sql = "INSERT INTO users (email, first_name, last_name, dob, password_hash) VALUES (?,?,?,?,?)";
+        String sql = "INSERT INTO users (email, firstName, lastName, dob, passwordHash) VALUES (?,?,?,?,?)";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-
             ps.setString(1, email);
             ps.setString(2, first);
             ps.setString(3, last);
             if (dob != null) {
-                ps.setDate(4, Date.valueOf(dob));  // convert LocalDate -> java.sql.Date
+                ps.setDate(4, Date.valueOf(dob));  // convert date to right format
             } else {
                 ps.setNull(4, java.sql.Types.DATE);
             }
             ps.setString(5, passwordHash);
-
             ps.executeUpdate();
         }
     }
