@@ -1,4 +1,14 @@
 package org.example.ai_integration;
+//sql stuff
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Date;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
+
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -84,8 +94,36 @@ public class SignupPage extends Application {
         vbox.setSpacing(15.0);
         Button button1 = new Button("Have an account? Log in!");
         Button button2 = new Button("Sign up");
+
         // Add the buttons to the HBox
         vbox.getChildren().addAll(button1, button2);
+
+        button2.setOnAction(e -> {
+            String email = emailtextField.getText().trim();
+            String first = firstNameField.getText().trim();
+            String last  = lastNameField.getText().trim();
+            LocalDate dob = dobPicker.getValue();
+            String pwd   = passtextField.getText();
+
+            if (email.isEmpty() || first.isEmpty() || last.isEmpty() || pwd.isEmpty()) {
+                System.out.println("Please fill in all required fields.");
+                return;
+            }
+
+            String passwordHash = sha256Hex(pwd);
+
+            new Thread(() -> {
+                try {
+                    insertUser(email, first, last, dob, passwordHash);
+                    System.out.println("User inserted!");
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                    System.out.println("Insert failed: " + ex.getMessage());
+                }
+            }).start();
+        });
+
+
         // Add the children to the root vbox
         root.getChildren().addAll(logHead,
                 labelEmail,emailtextField,
@@ -103,5 +141,48 @@ public class SignupPage extends Application {
 
     public static void main(String[] args) {
         launch();
+
+
+    }
+
+
+    private Connection getConnection() throws SQLException {
+        // Replace with your DB details
+        String url  = "jdbc:mysql://127.0.0.1:3306/your_database?useSSL=false&serverTimezone=UTC";
+        String user = "root";
+        String pass = "Minecr@ft1";
+
+        // With Connector/J 8+, the driver auto-registers. If needed, uncomment:
+        // try { Class.forName("com.mysql.cj.jdbc.Driver"); } catch (ClassNotFoundException ignored) {}
+        return DriverManager.getConnection(url, user, pass);
+    }
+
+    private void insertUser(String email, String first, String last, LocalDate dob, String passwordHash) throws SQLException {
+        String sql = "INSERT INTO users (email, first_name, last_name, dob, password_hash) VALUES (?,?,?,?,?)";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, email);
+            ps.setString(2, first);
+            ps.setString(3, last);
+            if (dob != null) {
+                ps.setDate(4, Date.valueOf(dob));  // convert LocalDate -> java.sql.Date
+            } else {
+                ps.setNull(4, java.sql.Types.DATE);
+            }
+            ps.setString(5, passwordHash);
+
+            ps.executeUpdate();
+        }
+    }
+
+    private String sha256Hex(String input) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] hash = md.digest(input.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            return HexFormat.of().formatHex(hash);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

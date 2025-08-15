@@ -1,6 +1,7 @@
 module org.example.ai_integration {
     requires javafx.controls;
     requires javafx.fxml;
+    requires java.sql;
 
     //added stuff
     requires okhttp3;
