@@ -30,17 +30,26 @@ public class SignupPage extends Application {
         Label logHead = new Label("Sign Up");
         //Email
         TextField emailtextField = new TextField();
-        Label label = new Label("Enter Email");
+        Label labelEmail = new Label("Enter Email");
         emailtextField.setText("name@example.com");
-        Label labelFName = new Label("Enter First Name");
+
+        // First and Last name
+        Label labelFName = new Label("Enter First Name:");
+        TextField firstNameField = new TextField();
+        firstNameField.setPromptText("First name");
+
         Label labelLName = new Label("Enter Last Name:");
+        TextField lastNameField = new TextField();
+        lastNameField.setPromptText("Last name");
 
 
-
+        // Password
         TextField passtextField = new TextField();
-        passtextField.setText("password: ");
+        passtextField.setPromptText("password: ****");
         Label labelnew = new Label("Enter Password");
-        // The HBox is used to hold the buttons
+
+
+        // The buttons
         VBox vbox = new VBox();
         vbox.setAlignment(javafx.geometry.Pos.CENTER);
         vbox.setSpacing(15.0);
@@ -49,7 +58,12 @@ public class SignupPage extends Application {
         // Add the buttons to the HBox
         vbox.getChildren().addAll(button1, button2);
         // Add the children to the root vbox
-        root.getChildren().addAll(label,emailtextField,labelnew, passtextField, vbox);
+        root.getChildren().addAll(logHead,
+                labelEmail,emailtextField,
+                labelFName, firstNameField,
+                labelLName, lastNameField,
+                labelnew, passtextField,
+                vbox);
         // Define the scene, add to the stage (window) and show the stage
         Scene scene = new Scene(root, 500, 300);
         stage.setScene(scene);
