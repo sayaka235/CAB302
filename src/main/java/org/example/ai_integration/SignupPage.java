@@ -6,10 +6,13 @@ import javafx.stage.Stage;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.PasswordField;
 import javafx.scene.layout.VBox;
 
 import javafx.util.StringConverter;
 import java.time.LocalDate;
+import javafx.scene.control.DateCell;
+import javafx.scene.control.DatePicker;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
@@ -42,10 +45,36 @@ public class SignupPage extends Application {
         TextField lastNameField = new TextField();
         lastNameField.setPromptText("Last name");
 
+        // Date of Birth
+        Label labelDob = new Label("Date of Birth:");
+        DatePicker dobPicker = new DatePicker();
+        dobPicker.setPromptText("dd/MM/yyyy");
+
+        // Disable future dates
+        dobPicker.setDayCellFactory(picker -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+                setDisable(empty || date.isAfter(LocalDate.now()));
+            }
+        });
+
+        // Optional: force dd/MM/yyyy display & parsing
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        dobPicker.setConverter(new StringConverter<LocalDate>() {
+            @Override public String toString(LocalDate date) {
+                return (date == null) ? "" : fmt.format(date);
+            }
+            @Override public LocalDate fromString(String s) {
+                if (s == null || s.trim().isEmpty()) return null;
+                try { return LocalDate.parse(s, fmt); }
+                catch (DateTimeParseException e) { return null; }
+            }
+        });
 
         // Password
-        TextField passtextField = new TextField();
-        passtextField.setPromptText("password: ****");
+        PasswordField passtextField = new PasswordField();
+        passtextField.setPromptText("password:");
         Label labelnew = new Label("Enter Password");
 
 
@@ -62,10 +91,11 @@ public class SignupPage extends Application {
                 labelEmail,emailtextField,
                 labelFName, firstNameField,
                 labelLName, lastNameField,
+                labelDob, dobPicker,
                 labelnew, passtextField,
                 vbox);
         // Define the scene, add to the stage (window) and show the stage
-        Scene scene = new Scene(root, 500, 300);
+        Scene scene = new Scene(root, 800, 500);
         stage.setScene(scene);
         stage.setTitle("JavaFX Example Scene");
         stage.show();
