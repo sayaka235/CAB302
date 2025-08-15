@@ -8,6 +8,12 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
+import javafx.util.StringConverter;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+
+
 public class SignupPage extends Application {
     @Override
     public void start(Stage stage) {
@@ -20,13 +26,17 @@ public class SignupPage extends Application {
         root.setSpacing(15.0);
         root.setFillWidth(false);
         // Create a TextField, a Label, and an HBox with appropriate
-        // text
+
         Label logHead = new Label("Sign Up");
+        //Email
         TextField emailtextField = new TextField();
         Label label = new Label("Enter Email");
-        emailtextField.setText("email:");
+        emailtextField.setText("name@example.com");
         Label labelFName = new Label("Enter First Name");
         Label labelLName = new Label("Enter Last Name:");
+
+
+
         TextField passtextField = new TextField();
         passtextField.setText("password: ");
         Label labelnew = new Label("Enter Password");
