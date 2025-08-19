@@ -32,14 +32,13 @@ public class QuizApp extends Application {
         uploadButton.setOnAction(e -> {
             FileChooser fileChooser = new FileChooser();
 
-            fileChooser.getExtensionFilters().addAll(
-                    new FileChooser.ExtensionFilter("Text Files", "*.txt"),
-                    new FileChooser.ExtensionFilter("PDF Files", "*.pdf"),
-                    new FileChooser.ExtensionFilter("Word Documents", "*.docx")
-            );
-            fileChooser.setSelectedExtensionFilter(
-                    new FileChooser.ExtensionFilter("PDF Files", "*.pdf")
-            );
+            FileChooser.ExtensionFilter  txtFilter = new FileChooser.ExtensionFilter("Text Files", "*.txt");
+            FileChooser.ExtensionFilter  pdfFilter = new FileChooser.ExtensionFilter("PDF Files", "*.pdf");
+            FileChooser.ExtensionFilter  docxFilter = new FileChooser.ExtensionFilter("Word Documents", "*.docx");
+
+            fileChooser.getExtensionFilters().addAll(txtFilter, pdfFilter, docxFilter);
+            fileChooser.setSelectedExtensionFilter(pdfFilter);
+
 
             File selectedFile = fileChooser.showOpenDialog(stage);
             if (selectedFile != null) {
