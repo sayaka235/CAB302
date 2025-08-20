@@ -148,12 +148,9 @@ public class SignupPage extends Application {
 
     private Connection getConnection() throws SQLException {
         // Replace with your DB details
-        String url  = "jdbc:mysql://127.0.0.1:3306/notesdata";
+        String url = "jdbc:mysql://127.0.0.1:3306/notesdata?useSSL=false&serverTimezone=UTC";
         String user = "root";
         String pass = "Minecr@ft1";
-
-        // With Connector/J 8+, the driver auto-registers. If needed, uncomment:
-        // try { Class.forName("com.mysql.cj.jdbc.Driver"); } catch (ClassNotFoundException ignored) {}
         return DriverManager.getConnection(url, user, pass);
     }
     // Insert the user data into the database from the java form
