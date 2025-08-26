@@ -1,6 +1,7 @@
-package org.example.ai_integration;
+/*package org.example.ai_integration;
 
 import javafx.application.Application;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.scene.control.Button;
@@ -8,13 +9,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
-public class LoginPage extends Application {
-    @Override
-    public void start(Stage stage) {
-        // Define the root node and set the alignment and spacing
-        // properties. Also, set the fillWidth property to false
-        // so the children are not resized to fill the width of the
-        // VBox.
+public class LoginPage {
+    public Parent createRoot(){
         VBox root = new VBox();
         root.setAlignment(javafx.geometry.Pos.CENTER);
         root.setSpacing(15.0);
@@ -33,7 +29,12 @@ public class LoginPage extends Application {
         vbox.setAlignment(javafx.geometry.Pos.CENTER);
         vbox.setSpacing(15.0);
         Button buttonSignUp = new Button("No account? Sign Up!");
+        Button buttonLogIn = new Button("Log in");
+        }
+
+        Button buttonSignUp = new Button("No account? Sign Up!");
         Button button2 = new Button("Log in");
+
         //Action when signup clicked
         buttonSignUp.setOnAction(event ->{
 
@@ -44,6 +45,7 @@ public class LoginPage extends Application {
         root.getChildren().addAll(logHead, entEmail,emailTextField,entpass, passTextField, vbox);
         // Define the scene, add to the stage (window) and show the stage
         Scene sceneLogin = new Scene(root, 500, 300);
+
         stage.setScene(sceneLogin);
         stage.setTitle("Quiz AI App");
         stage.show();
@@ -52,4 +54,4 @@ public class LoginPage extends Application {
     public static void main(String[] args) {
         launch();
     }
-}
+}*/
