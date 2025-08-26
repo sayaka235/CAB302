@@ -32,16 +32,20 @@ public class LoginPage extends Application {
         VBox vbox = new VBox();
         vbox.setAlignment(javafx.geometry.Pos.CENTER);
         vbox.setSpacing(15.0);
-        Button button1 = new Button("No account? Sign Up!");
+        Button buttonSignUp = new Button("No account? Sign Up!");
         Button button2 = new Button("Log in");
+        //Action when signup clicked
+        buttonSignUp.setOnAction(event ->{
+
+        });
         // Add the buttons to the HBox
-        vbox.getChildren().addAll(button1, button2);
+        vbox.getChildren().addAll(buttonSignUp, button2);
         // Add the children to the root vbox
         root.getChildren().addAll(logHead, entEmail,emailTextField,entpass, passTextField, vbox);
         // Define the scene, add to the stage (window) and show the stage
-        Scene scene = new Scene(root, 500, 300);
-        stage.setScene(scene);
-        stage.setTitle("JavaFX Example Scene");
+        Scene sceneLogin = new Scene(root, 500, 300);
+        stage.setScene(sceneLogin);
+        stage.setTitle("Quiz AI App");
         stage.show();
     }
 
