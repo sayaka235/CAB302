@@ -13,5 +13,7 @@ module org.example.ai_integration {
 
     opens org.example.ai_integration to javafx.fxml;
     exports org.example.ai_integration;
+    exports org.example.ai_integration.model;
+    opens org.example.ai_integration.model to javafx.fxml;
 
 }

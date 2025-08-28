@@ -1,4 +1,4 @@
-package org.example.ai_integration;
+package org.example.ai_integration.model;
 
 import okhttp3.*;
 import com.google.gson.*;

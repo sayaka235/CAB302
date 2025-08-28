@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<VBox alignment="CENTER" spacing="15.0" fillWidth="false" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller = "org.example.ai_integration.LoginController">
+    <children>
+        <Label text="Log In"/>
+        <Label text="Enter email"/>
+        <TextField text="email:"/>
+        <TextField text ="password:"/>
+        <VBox alignment="CENTER" spacing="15.0">
+            <Button text = "No account? Sign Up!" onAction ="#handleSignUpClick"/>
+            <Button text = "Login" onAction ="#handleLoginClick"/>
+        </VBox>
+    </children>
+</VBox>

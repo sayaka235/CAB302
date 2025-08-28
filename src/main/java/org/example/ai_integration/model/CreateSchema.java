@@ -1,12 +1,12 @@
-package org.example.ai_integration;
+package org.example.ai_integration.model;
 
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public final class Schema {
-    private Schema() {}
+public final class CreateSchema {
+    private CreateSchema() {}
 
     public static void initAll() throws SQLException {
         try (Connection c = Database.getConnection(); Statement st = c.createStatement()) {

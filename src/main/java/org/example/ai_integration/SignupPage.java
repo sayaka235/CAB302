@@ -7,6 +7,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.example.ai_integration.model.Database;
+import org.example.ai_integration.model.CreateSchema;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -18,12 +20,13 @@ public class SignupPage extends Application {
     private TextField emailField, firstNameField, lastNameField;
     private DatePicker dobPicker;
     private PasswordField passField;
-    private Button submitButton;
+    private Button signupButton;
+    private Button loginButton;
 
     @Override
     public void start(Stage stage) throws Exception {
         // 1) Ensure all tables exist ONCE at startup
-        Schema.initAll();
+        CreateSchema.initAll();
 
         // 2) Build minimal UI
         emailField     = new TextField();
@@ -31,7 +34,9 @@ public class SignupPage extends Application {
         lastNameField  = new TextField();
         dobPicker      = new DatePicker();
         passField      = new PasswordField();
-        submitButton   = new Button("Sign up");
+        signupButton   = new Button("Sign up");
+        loginButton    = new Button("Log in");
+        
 
         VBox root = new VBox(10,
                 new Label("Email"), emailField,
@@ -39,11 +44,12 @@ public class SignupPage extends Application {
                 new Label("Last name"), lastNameField,
                 new Label("DOB (YYYY-MM-DD)"), dobPicker,
                 new Label("Password"), passField,
-                submitButton
+                signupButton,
+                new Label("Don't have an account?"), loginButton
         );
 
         // 3) Insert on background thread, confirm by selecting the row back
-        submitButton.setOnAction(e -> {
+        signupButton.setOnAction(e -> {
             String email = emailField.getText();
             String first = firstNameField.getText();
             String last  = lastNameField.getText();

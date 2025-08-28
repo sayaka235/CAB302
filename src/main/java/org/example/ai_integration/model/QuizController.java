@@ -1,4 +1,4 @@
-package org.example.ai_integration;
+package org.example.ai_integration.model;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -7,6 +7,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+
 import java.io.File;
 import java.io.IOException;
 
