@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
 
 <VBox xmlns="http://javafx.com/javafx/21"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="org.example.ai_integration.controls.SignupController"
-      alignment="CENTER" spacing="12" padding="16"
-      prefWidth="480" prefHeight="360"
-      style="-fx-background-color: #f3f4f6;">
+      alignment="CENTER" spacing="12" prefWidth="480" prefHeight="360"
+      style="-fx-background-color:#f3f4f6;">
+    <padding>
+        <Insets top="16" right="16" bottom="16" left="16"/>
+    </padding>
     <children>
         <Label text="Sign Up" style="-fx-font-size: 20; -fx-font-weight: bold;"/>
         <TextField fx:id="emailField" promptText="Email"/>
