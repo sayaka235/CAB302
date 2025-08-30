@@ -118,6 +118,26 @@ public final class Schema {
                     ON UPDATE CASCADE ON DELETE CASCADE
                 );
             """);
+
+            // --- QuizAttemptAnswer (per-question answers for MCQ) ---
+            st.executeUpdate("""
+                CREATE TABLE IF NOT EXISTS QuizAttemptAnswer(
+                  id               INTEGER PRIMARY KEY,
+                  scoreID          INTEGER NOT NULL,
+                  questionID       INTEGER NOT NULL,
+                  userOptionNumber INTEGER NOT NULL,   -- 1..4
+                  isCorrect        INTEGER NOT NULL,   -- 0/1
+                  answeredAt       TEXT NOT NULL DEFAULT (datetime('now')),
+                  FOREIGN KEY (scoreID)   REFERENCES QuizScoreArray(scoreID)
+                    ON UPDATE CASCADE ON DELETE CASCADE,
+                  FOREIGN KEY (questionID) REFERENCES QuizQuestions(questionID)
+                    ON UPDATE CASCADE ON DELETE CASCADE
+                );
+            """);
+            st.executeUpdate("""
+                INSERT OR IGNORE INTO Users(ID, email, firstName, lastName, dob, passwordHash)
+                VALUES(1, 'demo@example.com', 'Demo', 'User', '2000-01-01', 'dev-hash')
+            """);
         }
     }
 }
