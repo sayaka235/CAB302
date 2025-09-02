@@ -1,0 +1,51 @@
+.root { -fx-font-family: "Segoe UI", "Inter", "SF Pro Text", Arial; -fx-font-size: 14px; }
+.card { -fx-padding: 18; -fx-background-color: white; -fx-background-radius: 18; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 16, 0.1, 0, 3); }
+.title { -fx-font-size: 18px; -fx-font-weight: bold; }
+.subtitle { -fx-font-size: 14px; -fx-font-weight: bold; }
+.eyebrow { -fx-text-fill: #344054; -fx-font-size: 13px; -fx-font-weight: bold; }
+.muted { -fx-text-fill: #667085; }
+.mutedSmall { -fx-text-fill: #98A2B3; -fx-font-size: 12px; }
+.uploadIcon { -fx-font-size: 36px; -fx-text-fill: #344054; }
+
+.dropzone {
+    -fx-background-color: #FAFAFA;
+    -fx-border-color: #D0D5DD;
+    -fx-border-insets: 0;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-border-width: 2;
+    -fx-border-style: segments(10, 8) line-cap round; /* dashed look */
+    -fx-padding: 18 16 18 16;
+}
+
+.primary-btn {
+    -fx-background-color: #111827;
+    -fx-text-fill: white;
+    -fx-background-radius: 12;
+    -fx-padding: 10 16;
+}
+.primary-btn:disabled { -fx-opacity: 0.5; }
+.ghost-btn {
+    -fx-background-color: transparent;
+    -fx-border-color: #D0D5DD;
+    -fx-text-fill: #111827;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 8 14;
+}
+.questionText { -fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #111827; }
+
+/* Option “card” look for RadioButtons */
+.radio-option {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-border-color: #E5E7EB;
+    -fx-border-radius: 12;
+    -fx-padding: 10 14;
+}
+.radio-option:hover { -fx-border-color: #CBD5E1; }
+.radio-option:selected {
+    -fx-background-color: #EEF2FF;
+    -fx-border-color: #6366F1;
+}
+.progress-bar > .bar { -fx-background-insets: 0; }
