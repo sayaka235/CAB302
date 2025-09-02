@@ -5,6 +5,7 @@ import javafx.scene.control.*;
 import org.example.ai_integration.Navigator;
 import org.example.ai_integration.model.Database;
 import org.example.ai_integration.model.User;
+import org.example.ai_integration.model.UserManager;
 
 import java.security.MessageDigest;
 import java.sql.Connection;
@@ -44,8 +45,9 @@ public class LoginController {
                     LocalDate dbDob = LocalDate.parse(rs.getString("dob"));
 
                     User loggedInUser = new User(email, dbFirstname, dbLastname, dbDob, sha256(pass));
+                    UserManager.getInstance().setLoggedInUser(loggedInUser);
                     alert(Alert.AlertType.INFORMATION, "Welcome",  "Hello " + loggedInUser.getName()+ ", login successful." );
-                    // TODO: Navigator.toDashboard();
+                    Navigator.toDashboard();
                 } else {
                     alert(Alert.AlertType.ERROR, "Login failed", "Invalid email or password.");
                 }
