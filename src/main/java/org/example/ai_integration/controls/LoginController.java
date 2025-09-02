@@ -4,11 +4,13 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import org.example.ai_integration.Navigator;
 import org.example.ai_integration.model.Database;
+import org.example.ai_integration.model.User;
 
 import java.security.MessageDigest;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.time.LocalDate;
 import java.util.HexFormat;
 
 public class LoginController {
@@ -28,14 +30,21 @@ public class LoginController {
             return;
         }
 
-        String sql = "SELECT id FROM Users WHERE email = ? AND passwordHash = ?";
+        String sql = "SELECT id, firstName, lastName, dob FROM Users WHERE email = ? AND passwordHash = ?";
         try (Connection c = Database.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, email);
             ps.setString(2, sha256(pass));
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    alert(Alert.AlertType.INFORMATION, "Welcome", "Login successful. User ID: " + rs.getLong("id"));
+                    String dbFirstname = rs.getString("firstName");
+                    String dbLastname = rs.getString("lastName");
+                    //String dbEmail = rs.getString("email");
+                    //String dbPasswordHash = rs.getString("passwordHash");
+                    LocalDate dbDob = LocalDate.parse(rs.getString("dob"));
+
+                    User loggedInUser = new User(email, dbFirstname, dbLastname, dbDob, sha256(pass));
+                    alert(Alert.AlertType.INFORMATION, "Welcome",  "Hello " + loggedInUser.getName()+ ", login successful." );
                     // TODO: Navigator.toDashboard();
                 } else {
                     alert(Alert.AlertType.ERROR, "Login failed", "Invalid email or password.");

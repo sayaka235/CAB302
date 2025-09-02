@@ -22,4 +22,5 @@ public class User {
     public String getLast(){return lastname;}
     public LocalDate getDob(){return dob;}
     public String getPassword(){return password;}
+    public String getName(){return firstname+ " " +lastname;}
 }
