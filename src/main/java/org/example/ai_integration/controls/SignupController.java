@@ -3,11 +3,10 @@ package org.example.ai_integration.controls;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import org.example.ai_integration.Navigator;
-import org.example.ai_integration.model.Database;
+import org.example.ai_integration.model.Signup;
+import org.example.ai_integration.model.User;
 
 import java.security.MessageDigest;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.HexFormat;
 
@@ -15,6 +14,11 @@ public class SignupController {
     @FXML private TextField emailField, firstNameField, lastNameField;
     @FXML private DatePicker dobPicker;
     @FXML private PasswordField passwordField;
+    private Signup signup;
+
+    public SignupController() {
+        this.signup = new Signup();
+    }
 
     @FXML private void handleSignup() {
         try {
@@ -22,22 +26,10 @@ public class SignupController {
             String first = firstNameField.getText().trim();
             String last  = lastNameField.getText().trim();
             LocalDate dob= dobPicker.getValue();
-            String pass  = passwordField.getText();
+            String pass  = sha256(passwordField.getText());
 
-            if (email.isEmpty() || first.isEmpty() || last.isEmpty() || dob == null || pass.isEmpty()) {
-                alert(Alert.AlertType.WARNING,"Missing fields","Complete all fields."); return;
-            }
-
-            String sql = "INSERT INTO Users(email, firstName, lastName, dob, passwordHash) VALUES(?,?,?,?,?)";
-            try (Connection c = Database.getConnection();
-                 PreparedStatement ps = c.prepareStatement(sql)) {
-                ps.setString(1, email);
-                ps.setString(2, first);
-                ps.setString(3, last);
-                ps.setString(4, dob.toString());
-                ps.setString(5, sha256(pass));
-                ps.executeUpdate();
-            }
+            User newUser = new User(email, first, last, dob, pass);
+            signup.insertUser(newUser);
             alert(Alert.AlertType.INFORMATION,"Success","Account created. You can log in now.");
             Navigator.toLogin();
         } catch (Exception e) { e.printStackTrace(); alert(Alert.AlertType.ERROR,"Signup failed",e.getMessage()); }
