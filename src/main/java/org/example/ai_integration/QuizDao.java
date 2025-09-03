@@ -1,5 +1,7 @@
 package org.example.ai_integration;
 
+import org.example.ai_integration.model.Database;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;

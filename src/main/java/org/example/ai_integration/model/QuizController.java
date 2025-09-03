@@ -12,6 +12,9 @@ import java.io.File;
 import java.io.IOException;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.RadioButton;
+import org.example.ai_integration.QuizDao;
+import org.example.ai_integration.QuizMcqRepo;
+
 import java.util.*;
 
 public class QuizController {

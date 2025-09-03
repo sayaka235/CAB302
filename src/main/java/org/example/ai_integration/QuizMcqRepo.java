@@ -1,5 +1,8 @@
 package org.example.ai_integration;
 
+import org.example.ai_integration.model.Database;
+import org.example.ai_integration.model.QuizAPI;
+
 import java.sql.*;
 import java.util.List;
 
