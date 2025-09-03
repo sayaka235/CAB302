@@ -1,6 +1,5 @@
 package org.example.ai_integration.model;
 
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
