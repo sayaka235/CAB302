@@ -105,9 +105,10 @@ public class QuizAPI
         return out;
     }
 
-    public static String generateQuiz(String content, String quizType)
+
+    public static String generateQuiz(String content, String quizType, int numQuestions)
     {
-        String prompt = buildPrompt(content, quizType);
+        String prompt = buildPrompt(content, quizType, numQuestions);
 
         JsonArray contentsArray = new JsonArray();
         JsonObject partsWrapper = new JsonObject();
@@ -145,36 +146,36 @@ public class QuizAPI
         }
     }
 
-    private static String buildPrompt(String content, String quizType)
+    private static String buildPrompt(String content, String quizType, int numQuestions)
     {
         switch (quizType)
         {
             case "Multiple Choice":
-                return """
-            Create a 5-question MULTIPLE CHOICE quiz from the content below.
+                return "Create a " + numQuestions + "-question MULTIPLE CHOICE quiz from the content below.\n\n" +
+                        "Output STRICTLY as raw JSON (no prose, no markdown fences):\n\n" +
+                        "[\n" +
+                        "  {\n" +
+                        "    \"question\": \"string\",\n" +
+                        "    \"options\": [\"opt1\",\"opt2\",\"opt3\",\"opt4\"],   // exactly 4\n" +
+                        "    \"correct_index\": 1                                   // 1..4 (1-based)\n" +
+                        "  }\n" +
+                        "]\n\n" + content;
 
-            Output STRICTLY as raw JSON (no prose, no markdown fences):
-
-            [
-              {
-                "question": "string",
-                "options": ["opt1","opt2","opt3","opt4"],   // exactly 4
-                "correct_index": 1                           // 1..4 (1-based)
-              }
-            ]
-            """ + "\n\n" + content;
             case "True/False":
-                return "Create a true/false quiz with 5 questions based on the following content. " +
-                        "Each question should have a statement and an answer of either 'True' or 'False'. " +
-                        "Format strictly as JSON with 'question' and 'answer' fields.\n\n" + content;
+                return "Create a " + numQuestions + "-question TRUE/FALSE quiz from the following content.\n" +
+                        "Each question should have a 'question' field and an 'answer' field with either 'True' or 'False'.\n\n" +
+                        content;
+
             case "Fill in the Blank":
-                return "Create a fill-in-the-blank quiz with 5 questions based on the following content. " +
-                        "Use a blank (____) in each sentence and provide the correct word as the answer. " +
-                        "Format strictly as JSON with 'question' and 'answer' fields.\n\n" + content;
+                return "Create a " + numQuestions + "-question FILL-IN-THE-BLANK quiz from the following content.\n" +
+                        "Use a blank (____) in each sentence and provide the correct word as the 'answer'.\n\n" +
+                        content;
+
             default:
                 return "Please select a valid quiz type.";
         }
     }
+
 
     private static String parseResponse(String json, String quizType)
     {
