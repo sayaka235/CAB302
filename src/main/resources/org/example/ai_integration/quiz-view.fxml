@@ -22,12 +22,17 @@
                     <Button fx:id="uploadButton" text="Browse…" styleClass="ghost-btn"/>
                 </VBox>
 
-                <!-- NEW number-of-questions picker -->
                 <HBox alignment="CENTER" spacing="6">
                     <Label text="Number of Questions:"/>
                     <Spinner fx:id="questionCountSpinner" editable="true"
                              min="1" max="20" initialValue="5"
                              maxWidth="100"/>
+                </HBox>
+                <TextField fx:id="quizTitleField" promptText="Enter quiz title" maxWidth="400"/>
+                <HBox alignment="CENTER" spacing="6">
+                    <Label text="Quiz Image:"/>
+                    <Button fx:id="uploadImageButton" text="Choose Image"/>
+                    <Label fx:id="imageFileLabel" text="No image selected" styleClass="mutedSmall"/>
                 </HBox>
 
                 <Button fx:id="startQuizButton" text="Start Quiz" disable="true" maxWidth="220"

@@ -3,6 +3,8 @@ package org.example.ai_integration.controls;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -25,6 +27,10 @@ public class QuizController {
     @FXML private StackPane rootStack;
     @FXML private VBox uploadCard, quizCard, historyCard, dropZone;
     @FXML private Label uploadHint;
+    @FXML private Spinner<Integer> questionCountSpinner;
+    @FXML private TextField quizTitleField;
+    @FXML private Button uploadImageButton;
+    @FXML private Label imageFileLabel;
     @FXML private Button uploadButton, startQuizButton;
     @FXML private Label questionCounterLabel, percentCompleteLabel, questionLabel;
     @FXML private ProgressBar progressBar;
@@ -35,25 +41,25 @@ public class QuizController {
     @FXML private Button retakeButton;
     @FXML private TextArea outputArea;
 
+    private File selectedImageFile;
     private String uploadedContent = null;
     private long quizId;
     private long scoreId;
     private int currentIndex = 0;
 
     private List<QuizDao.McqQuestion> mcqQuestions = new ArrayList<>();
-
     private final Map<Long, Integer> selectedByQuestionId = new HashMap<>();
 
     private static final long CURRENT_USER_ID = 1L;
 
     @FXML
     private void initialize() {
-        try {
-            CreateSchema.initAll();} catch (Exception ignored) {}
+        try { CreateSchema.initAll(); } catch (Exception ignored) {}
 
         showUploadCard();
         startQuizButton.setDisable(true);
 
+        // Drag & drop upload
         dropZone.setOnDragOver(e -> {
             if (e.getGestureSource() != dropZone && e.getDragboard().hasFiles()) {
                 e.acceptTransferModes(javafx.scene.input.TransferMode.COPY);
@@ -67,6 +73,7 @@ public class QuizController {
             e.consume();
         });
 
+        // File chooser
         uploadButton.setOnAction(e -> {
             FileChooser fc = new FileChooser();
             var pdf = new FileChooser.ExtensionFilter("PDF Files (*.pdf)", "*.pdf");
@@ -79,29 +86,35 @@ public class QuizController {
             if (f != null) handlePickedFile(f);
         });
 
-        startQuizButton.setOnAction(e -> startQuiz());
-        backButton.setOnAction(e -> {
-            if (currentIndex > 0) {currentIndex--;renderQuestion();}
+        // Image picker
+        uploadImageButton.setOnAction(e -> {
+            FileChooser fc = new FileChooser();
+            fc.getExtensionFilters().add(
+                    new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg")
+            );
+            File f = fc.showOpenDialog(getStage());
+            if (f != null) {
+                selectedImageFile = f;
+                imageFileLabel.setText(f.getName());
+            }
         });
+
+        startQuizButton.setOnAction(e -> startQuiz());
+        backButton.setOnAction(e -> { if (currentIndex > 0) { currentIndex--; renderQuestion(); } });
         nextButton.setOnAction(e -> onNext());
         takeNewQuizButton.setOnAction(e -> showUploadCard());
 
         retakeButton.setOnAction(e -> beginRetakeSelected());
         attemptsList.getSelectionModel().selectedItemProperty().addListener((obs, old, sel) ->
-                retakeButton.setDisable(sel == null)
-        );
-        attemptsList.setOnMouseClicked(e -> {
-            if (e.getClickCount() == 2) beginRetakeSelected();
-        });
+                retakeButton.setDisable(sel == null));
+        attemptsList.setOnMouseClicked(e -> { if (e.getClickCount() == 2) beginRetakeSelected(); });
     }
 
-    private void showUploadCard() {uploadCard.setVisible(true);quizCard.setVisible(false);historyCard.setVisible(false);}
-    private void showQuizCard() {uploadCard.setVisible(false);quizCard.setVisible(true);historyCard.setVisible(false);}
-    private void showHistoryCard() {uploadCard.setVisible(false);quizCard.setVisible(false);historyCard.setVisible(true);}
+    private void showUploadCard() { uploadCard.setVisible(true); quizCard.setVisible(false); historyCard.setVisible(false); }
+    private void showQuizCard()   { uploadCard.setVisible(false); quizCard.setVisible(true); historyCard.setVisible(false); }
+    private void showHistoryCard(){ uploadCard.setVisible(false); quizCard.setVisible(false); historyCard.setVisible(true); }
 
-    private Stage getStage() {
-        return (Stage) rootStack.getScene().getWindow();
-    }
+    private Stage getStage() { return (Stage) rootStack.getScene().getWindow(); }
 
     private void handlePickedFile(File f) {
         try {
@@ -127,9 +140,14 @@ public class QuizController {
 
         new Thread(() -> {
             try {
-                String json = QuizAPI.generateQuiz(uploadedContent, "Multiple Choice");
+                int numQuestions = questionCountSpinner != null ? questionCountSpinner.getValue() : 5;
+                String title = quizTitleField.getText();
+                String imagePath = selectedImageFile != null ? selectedImageFile.getAbsolutePath() : null;
+
+                String json = QuizAPI.generateQuiz(uploadedContent, "Multiple Choice", numQuestions);
                 List<QuizAPI.McqItem> items = QuizAPI.parseMcqArray(json);
-                quizId = QuizMcqRepo.createQuiz("Multiple Choice", 1, items);
+
+                quizId = QuizMcqRepo.createQuiz("Multiple Choice", CURRENT_USER_ID, items, title, imagePath);
                 scoreId = QuizDao.startAttempt(quizId, CURRENT_USER_ID);
                 mcqQuestions = QuizDao.loadQuestions(quizId);
 
@@ -216,20 +234,42 @@ public class QuizController {
         try {
             var attempts = QuizDao.listAttemptsForUser(CURRENT_USER_ID);
             attemptsList.getItems().setAll(attempts);
+
             attemptsList.setCellFactory(lv -> new ListCell<>() {
+                private final ImageView imageView = new ImageView();
+
                 @Override protected void updateItem(QuizDao.AttemptRow a, boolean empty) {
                     super.updateItem(a, empty);
-                    if (empty || a == null) {setText(null);return;}
-                    setText("Quiz #" + a.quizID + "  —  " + a.score + "%  •  " + a.dateAttempted);
+                    if (empty || a == null) {
+                        setText(null);
+                        setGraphic(null);
+                        return;
+                    }
+
+                    String title = (a.title != null && !a.title.isBlank())
+                            ? a.title
+                            : "Quiz #" + a.quizID;
+
+                    setText(title + " — " + a.score + "% • " + a.dateAttempted);
+
+                    if (a.imagePath != null && !a.imagePath.isBlank()) {
+                        imageView.setImage(new Image(new File(a.imagePath).toURI().toString(), 40, 40, true, true));
+                        setGraphic(imageView);
+                    } else {
+                        setGraphic(null);
+                    }
                 }
             });
+
             retakeButton.setDisable(attempts.isEmpty());
         } catch (Exception e) {
             attemptsList.getItems().clear();
-            attemptsList.getItems().add(new QuizDao.AttemptRow(0, 0, 0, 0, "[Failed to load]"));
+            attemptsList.getItems().add(new QuizDao.AttemptRow(0, 0, 0, 0,
+                    "[Failed to load]", "Error", ""));
             retakeButton.setDisable(true);
         }
     }
+
     private void beginRetakeSelected() {
         var sel = attemptsList.getSelectionModel().getSelectedItem();
         if (sel != null) beginRetake(sel.quizID);
