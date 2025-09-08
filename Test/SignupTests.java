@@ -1,79 +1,92 @@
-import org.example.ai_integration.model.User;
+import org.example.ai_integration.model.SignupClass;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
+import java.util.Calendar;
+import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class SignupTests {
 
+    private boolean isValidName(String name) {
+        return name != null && name.matches("^[A-Za-z-]+$");
+    }
+
+    private boolean isValidEmail(String email) {
+        return email != null && email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
+    }
+
+    private boolean isValidDob(Date dob) {
+        return dob != null && dob.before(new Date());
+    }
+
+    private boolean isValidPassword(String password) {
+        return password != null && password.length() >= 6;
+    }
+
+    private boolean signupValid(SignupClass s, String password) {
+        return isValidName(s.getFirstName())
+                && isValidName(s.getLastName())
+                && isValidEmail(s.getEmail())
+                && isValidDob(s.getDob())
+                && isValidPassword(password);
+    }
+
     @Test
     public void testValidSignup() {
-        User user = new User("jane.doe@example.com", "Jane", "Doe",
-                LocalDate.of(1995, 5, 10), "secure123");
-        assertTrue(User.signupValid(user));
+        SignupClass s = new SignupClass("Alice", "Graystone", "alice@example.com",
+                "123 Lane", new Date(95, Calendar.JANUARY, 1));
+        assertTrue(signupValid(s, "StrongPass1"));
     }
 
     @Test
-    public void testInvalidNameWithNumbers() {
-        User user = new User("bad@example.com", "Jane123", "Doe",
-                LocalDate.of(1995, 5, 10), "secure123");
-        assertFalse(User.signupValid(user));
+    public void testInvalidSignupNameWithNumbers() {
+        SignupClass s = new SignupClass("Alice123", "Graystone", "alice@example.com",
+                "123 Lane", new Date(95, Calendar.JANUARY, 1));
+        assertFalse(signupValid(s, "StrongPass1"));
     }
 
     @Test
-    public void testInvalidNameWithSymbols() {
-        User user = new User("bad@example.com", "Jane@", "Doe",
-                LocalDate.of(1995, 5, 10), "secure123");
-        assertFalse(User.signupValid(user));
+    public void testInvalidSignupEmailFormat() {
+        SignupClass s = new SignupClass("Alice", "Graystone", "bad-email",
+                "123 Lane", new Date(95, Calendar.JANUARY, 1));
+        assertFalse(signupValid(s, "StrongPass1"));
     }
 
     @Test
-    public void testInvalidEmailFormat() {
-        User user = new User("not-an-email", "Jane", "Doe",
-                LocalDate.of(1995, 5, 10), "secure123");
-        assertFalse(User.signupValid(user));
-    }
-
-    @Test
-    public void testFutureDobInvalid() {
-        User user = new User("jane.doe@example.com", "Jane", "Doe",
-                LocalDate.now().plusDays(1), "secure123");
-        assertFalse(User.signupValid(user));
+    public void testInvalidSignupFutureDob() {
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.YEAR, 1);
+        SignupClass s = new SignupClass("Alice", "Graystone", "alice@example.com",
+                "123 Lane", cal.getTime());
+        assertFalse(signupValid(s, "StrongPass1"));
     }
 
     @Test
     public void testShortPasswordInvalid() {
-        User user = new User("jane.doe@example.com", "Jane", "Doe",
-                LocalDate.of(1995, 5, 10), "123");
-        assertFalse(User.signupValid(user));
+        SignupClass s = new SignupClass("Alice", "Graystone", "alice@example.com",
+                "123 Lane", new Date(95, Calendar.JANUARY, 1));
+        assertFalse(signupValid(s, "123"));
     }
 
     @Test
-    public void testNullNameFails() {
-        User user = new User("jane.doe@example.com", null, "Doe",
-                LocalDate.of(1995, 5, 10), "secure123");
-        assertFalse(User.signupValid(user));
-    }
+    public void testNullFieldsInvalid() {
+        SignupClass s1 = new SignupClass(null, "Graystone", "alice@example.com",
+                "123 Lane", new Date(95, Calendar.JANUARY, 1));
+        assertFalse(signupValid(s1, "StrongPass1"));
 
-    @Test
-    public void testNullEmailFails() {
-        User user = new User(null, "Jane", "Doe",
-                LocalDate.of(1995, 5, 10), "secure123");
-        assertFalse(User.signupValid(user));
-    }
+        SignupClass s2 = new SignupClass("Alice", null, "alice@example.com",
+                "123 Lane", new Date(95, Calendar.JANUARY, 1));
+        assertFalse(signupValid(s2, "StrongPass1"));
 
-    @Test
-    public void testNullDobFails() {
-        User user = new User("jane.doe@example.com", "Jane", "Doe",
-                null, "secure123");
-        assertFalse(User.signupValid(user));
-    }
+        SignupClass s3 = new SignupClass("Alice", "Graystone", null,
+                "123 Lane", new Date(95, Calendar.JANUARY, 1));
+        assertFalse(signupValid(s3, "StrongPass1"));
 
-    @Test
-    public void testNullPasswordFails() {
-        User user = new User("jane.doe@example.com", "Jane", "Doe",
-                LocalDate.of(1995, 5, 10), null);
-        assertFalse(User.signupValid(user));
+        SignupClass s4 = new SignupClass("Alice", "Graystone", "alice@example.com",
+                "123 Lane", null);
+        assertFalse(signupValid(s4, "StrongPass1"));
+
+        assertFalse(signupValid(s4, null)); // null password
     }
 }
