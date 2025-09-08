@@ -1,4 +1,4 @@
-package org.example.ai_integration;
+package org.example.ai_integration.model;
 
 import java.nio.file.*;
 import java.sql.*;
@@ -19,8 +19,7 @@ public final class Database {
         try (Statement s = conn.createStatement()) {
             s.execute("PRAGMA foreign_keys = ON");
             s.execute("PRAGMA busy_timeout = 3000");
-            // s.execute("PRAGMA journal_mode = WAL"); // optional
         }
-        return conn;
+        return DriverManager.getConnection(url);
     }
 }

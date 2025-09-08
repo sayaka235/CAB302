@@ -1,10 +1,14 @@
-package org.example.ai_integration;
+package org.example.ai_integration.model;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.charset.StandardCharsets;
+
+// PDF
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
+
+// DOCX
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 
@@ -13,9 +17,12 @@ public class FileUtil {
     public static String readFileContent(File file) throws IOException {
         String name = file.getName().toLowerCase();
 
+        // TXT
         if (name.endsWith(".txt")) {
             return Files.readString(file.toPath(), StandardCharsets.UTF_8);
         }
+
+        // PDF
         else if (name.endsWith(".pdf")) {
             try (PDDocument doc = PDDocument.load(file)) {
                 if (doc.isEncrypted()) {
@@ -29,6 +36,10 @@ public class FileUtil {
                 return "Error reading PDF: " + e.getMessage();
             }
         }
+
+
+
+        // DOCX
         else if (name.endsWith(".docx")) {
             try (FileInputStream fis = new FileInputStream(file)) {
                 XWPFDocument doc = new XWPFDocument(fis);
@@ -39,6 +50,8 @@ public class FileUtil {
                 return text.toString();
             }
         }
+
+        // Unsupported
         return "Unsupported file type: " + name;
     }
 }
