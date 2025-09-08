@@ -17,9 +17,11 @@ public class LoginTests {
     public void setUp() {
         users = new ArrayList<>();
         users.add(new User("johndoe@example.com", "John", "Doe",
-                LocalDate.of(1990, 1, 1), "password123"));
+                LocalDate.of(1990, 1, 1), "P@sword1!"));
         users.add(new User("janedoe@example.com", "Jane", "Doe",
-                LocalDate.of(1992, 2, 2), "qwerty"));
+                LocalDate.of(1992, 2, 2), "P@sword2!"));
+        users.add(new User("s@m@falsemail", "S@m", "D0e", LocalDate.of(2000,5,12),
+        "password"));
     }
 
     // ---------- Login Tests ----------
