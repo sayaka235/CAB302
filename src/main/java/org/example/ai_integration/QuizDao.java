@@ -9,11 +9,15 @@ import java.util.List;
 public final class QuizDao {
     private QuizDao() {}
 
+    // -----------------------------
+    // Question entity
+    // -----------------------------
     public static final class McqQuestion {
         public final long questionID;
         public final String text;
         public final String[] options;
         public final int correctOption;
+
         public McqQuestion(long id, String text, String o1, String o2, String o3, String o4, int correct) {
             this.questionID = id;
             this.text = text;
@@ -22,6 +26,9 @@ public final class QuizDao {
         }
     }
 
+    // -----------------------------
+    // Attempt start
+    // -----------------------------
     public static long startAttempt(long quizId, long userId) throws SQLException {
         try (Connection c = Database.getConnection();
              PreparedStatement ps = c.prepareStatement(
@@ -34,12 +41,13 @@ public final class QuizDao {
                 if (rs.next()) return rs.getLong(1);
             }
             System.out.println("DEBUG startAttempt quizId=" + quizId + ", userId=" + userId);
-
         }
         throw new SQLException("Failed to create attempt.");
-
     }
 
+    // -----------------------------
+    // Load quiz questions
+    // -----------------------------
     public static List<McqQuestion> loadQuestions(long quizId) throws SQLException {
         String sql = """
             SELECT questionID, questionText, option1, option2, option3, option4, correctOptionNumber
@@ -68,6 +76,9 @@ public final class QuizDao {
         }
     }
 
+    // -----------------------------
+    // Record answer
+    // -----------------------------
     public static void recordAnswer(long scoreId, long questionId, int userOptionNumber, int correctOptionNumber)
             throws SQLException {
         int isCorrect = (userOptionNumber == correctOptionNumber) ? 1 : 0;
@@ -82,6 +93,9 @@ public final class QuizDao {
         }
     }
 
+    // -----------------------------
+    // Finish attempt
+    // -----------------------------
     public static int finishAttempt(long scoreId, boolean updateQuizRollup) throws SQLException {
         int total = 0, correct = 0;
         long quizId;
@@ -142,15 +156,35 @@ public final class QuizDao {
             return percent;
         }
     }
+
+    // -----------------------------
+    // Attempt row (history view)
+    // -----------------------------
     public static final class AttemptRow {
-        public final long scoreID, quizID; public final int score, numQuestions;
+        public final long scoreID, quizID;
+        public final int score, numQuestions;
         public final String dateAttempted;
-        public AttemptRow(long s,long q,int sc,int n,String d){scoreID=s;quizID=q;score=sc;numQuestions=n;dateAttempted=d;}
+        public final String title;     // NEW
+        public final String imagePath; // NEW
+
+        public AttemptRow(long s, long q, int sc, int n, String d, String t, String img) {
+            scoreID = s;
+            quizID = q;
+            score = sc;
+            numQuestions = n;
+            dateAttempted = d;
+            title = t;
+            imagePath = img;
+        }
     }
 
+    // -----------------------------
+    // History query
+    // -----------------------------
     public static java.util.List<AttemptRow> listAttemptsForUser(long userId) throws SQLException {
         String sql = """
-        SELECT qsa.scoreID, qsa.quizID, qsa.score, q.numQuestions, qsa.dateAttempted
+        SELECT qsa.scoreID, qsa.quizID, qsa.score, q.numQuestions, qsa.dateAttempted,
+               q.title, q.imagePath
         FROM QuizScoreArray qsa
         JOIN Quiz q ON q.quizID = qsa.quizID
         WHERE qsa.userID = ?
@@ -166,11 +200,18 @@ public final class QuizDao {
                             rs.getLong("quizID"),
                             rs.getInt("score"),
                             rs.getInt("numQuestions"),
-                            rs.getString("dateAttempted")));
+                            rs.getString("dateAttempted"),
+                            rs.getString("title"),
+                            rs.getString("imagePath")
+                    ));
                 return out;
             }
         }
     }
+
+    // -----------------------------
+    // Upsert answer
+    // -----------------------------
     public static void upsertAnswer(long scoreId, long questionId, int userOptionNumber, int correctOptionNumber)
             throws SQLException {
         try (Connection c = Database.getConnection()) {

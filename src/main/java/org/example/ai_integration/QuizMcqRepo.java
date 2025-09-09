@@ -9,45 +9,43 @@ import java.util.List;
 public final class QuizMcqRepo {
     private QuizMcqRepo() {}
 
-    public static long createQuiz(String quizType, int difficulty, List<QuizAPI.McqItem> qs) throws SQLException {
+    public static long createQuiz(String quizType, long userId,
+                                  List<QuizAPI.McqItem> items,
+                                  String title,
+                                  String imagePath) throws SQLException {
         try (Connection c = Database.getConnection()) {
-            c.setAutoCommit(false);
+            // Insert quiz metadata (with title & imagePath)
             try (PreparedStatement ps = c.prepareStatement(
-                    "INSERT INTO Quiz(difficulty, score, numQuestions, numAttempts, numSuccesses) VALUES(?, 0, ?, 0, 0)",
+                    "INSERT INTO Quiz (quizType, userID, numQuestions, title, imagePath) VALUES (?,?,?,?,?)",
                     Statement.RETURN_GENERATED_KEYS)) {
-                ps.setInt(1, difficulty);
-                ps.setInt(2, qs.size());
+                ps.setString(1, quizType);
+                ps.setLong(2, userId);
+                ps.setInt(3, items.size());
+                ps.setString(4, title);
+                ps.setString(5, imagePath);
                 ps.executeUpdate();
-                long quizId;
                 try (ResultSet rs = ps.getGeneratedKeys()) {
-                    if (!rs.next()) throw new SQLException("No quizID generated");
-                    quizId = rs.getLong(1);
-                }
-                try (PreparedStatement qps = c.prepareStatement("""
-                    INSERT INTO QuizQuestions(quizID, questionText, option1, option2, option3, option4, correctOptionNumber)
-                    VALUES(?,?,?,?,?,?,?)
-                """)) {
-                    for (QuizAPI.McqItem q : qs) {
-                        if (q.options == null || q.options.size() != 4)
-                            throw new SQLException("MCQ item must have exactly 4 options.");
-                        qps.setLong(1, quizId);
-                        qps.setString(2, q.question);
-                        qps.setString(3, q.options.get(0));
-                        qps.setString(4, q.options.get(1));
-                        qps.setString(5, q.options.get(2));
-                        qps.setString(6, q.options.get(3));
-                        qps.setInt(7, q.correct_index); // 1..4
-                        qps.addBatch();
+                    if (!rs.next()) throw new SQLException("Failed to create quiz");
+                    long quizId = rs.getLong(1);
+
+                    // Insert questions
+                    try (PreparedStatement qs = c.prepareStatement(
+                            "INSERT INTO QuizQuestions (quizID, questionText, option1, option2, option3, option4, correctOptionNumber) " +
+                                    "VALUES (?,?,?,?,?,?,?)")) {
+                        for (QuizAPI.McqItem item : items) {
+                            qs.setLong(1, quizId);
+                            qs.setString(2, item.question);
+                            qs.setString(3, item.options.get(0));
+                            qs.setString(4, item.options.get(1));
+                            qs.setString(5, item.options.get(2));
+                            qs.setString(6, item.options.get(3));
+                            qs.setInt(7, item.correct_index);
+                            qs.addBatch();
+                        }
+                        qs.executeBatch();
                     }
-                    qps.executeBatch();
+                    return quizId;
                 }
-                c.commit();
-                return quizId;
-            } catch (SQLException e) {
-                c.rollback();
-                throw e;
-            } finally {
-                c.setAutoCommit(true);
             }
         }
     }

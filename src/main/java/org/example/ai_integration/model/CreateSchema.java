@@ -24,15 +24,17 @@ public final class CreateSchema {
             """);
 
             // --- Quiz (standalone quiz definitions/snapshots) ---
-            st.executeUpdate("""
-                CREATE TABLE IF NOT EXISTS Quiz(
-                  quizID        INTEGER PRIMARY KEY,
-                  difficulty    INTEGER NOT NULL,
-                  score         INTEGER NOT NULL,
-                  numQuestions  INTEGER NOT NULL,
-                  numAttempts   INTEGER NOT NULL,
-                  numSuccesses  INTEGER NOT NULL
-                );
+            st.execute("""
+                CREATE TABLE IF NOT EXISTS Quiz (
+                    quizID INTEGER PRIMARY KEY AUTOINCREMENT,
+                    quizType TEXT NOT NULL,
+                    userID INTEGER NOT NULL,
+                    numQuestions INTEGER NOT NULL,
+                    numAttempts INTEGER DEFAULT 0,
+                    numSuccesses INTEGER DEFAULT 0,
+                    title TEXT,
+                    imagePath TEXT
+                )
             """);
 
             // --- Files (owned by a user) ---

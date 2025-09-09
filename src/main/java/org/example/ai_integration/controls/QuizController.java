@@ -16,7 +16,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.RadioButton;
 import org.example.ai_integration.QuizDao;
 import org.example.ai_integration.QuizMcqRepo;
-import org.example.ai_integration.model.CreateSchema;
+/*import org.example.ai_integration.model.CreateSchema;*/
 import org.example.ai_integration.model.FileUtil;
 import org.example.ai_integration.model.QuizAPI;
 
@@ -54,7 +54,6 @@ public class QuizController {
 
     @FXML
     private void initialize() {
-        try { CreateSchema.initAll(); } catch (Exception ignored) {}
 
         showUploadCard();
         startQuizButton.setDisable(true);
