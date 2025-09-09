@@ -18,6 +18,7 @@ public final class Navigator {
     private static final String SIGNUP_FXML = "/org/example/ai_integration/ApplicationEntryScene.fxml";
     private static final String DASHBOARD_FXML = "/org/example/ai_integration/DashboardScene.fxml";
     private static final String FILEUPLOADQUIZ_FXML = "/org/example/ai_integration/quiz-view.fxml";
+    private static final String QUIZLIBRARY_FXML = "/org/example/ai_integration/quizLibrary.fxml";
     private User loggedinUser;
     private static Scene scene;
     private static Stage stage; // optional: to update title
@@ -52,6 +53,11 @@ public final class Navigator {
         scene.getStylesheets().add(Objects.requireNonNull(Navigator.class.getResource("/org/example/ai_integration/quiz.css")).toExternalForm());
         if(stage != null) stage.setTitle("Upload new file");
     }
+    public static void toQuizLibrary() throws IOException{
+        ensureInitialized();
+        scene.setRoot(load(QUIZLIBRARY_FXML));
+        if(stage != null) stage.setTitle("Quiz Library");
+    }
 
     private static Parent load(String path) throws IOException {
         var url = Navigator.class.getResource(path);
@@ -63,4 +69,6 @@ public final class Navigator {
             throw new IllegalStateException("Navigator not initialized. Call Navigator.init(...) in App.start().");
         }
     }
+
+
 }

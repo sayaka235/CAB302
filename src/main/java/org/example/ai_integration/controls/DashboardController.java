@@ -21,4 +21,12 @@ public class DashboardController {
             e.printStackTrace();
         }
     }
+    @FXML
+    private void quizLibrary(ActionEvent actionEvent) {
+        try {
+            Navigator.toQuizLibrary();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
