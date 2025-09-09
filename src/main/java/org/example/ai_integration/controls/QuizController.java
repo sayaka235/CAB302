@@ -7,6 +7,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +20,7 @@ import org.example.ai_integration.QuizMcqRepo;
 import org.example.ai_integration.model.CreateSchema;
 import org.example.ai_integration.model.FileUtil;
 import org.example.ai_integration.model.QuizAPI;
+import org.example.ai_integration.ChartModel;
 
 import java.util.*;
 
