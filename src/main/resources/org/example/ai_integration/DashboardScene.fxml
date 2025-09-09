@@ -16,5 +16,6 @@
     </padding>
     <children>
         <Label fx:id = "WelcomeLabel" style="-fx-font-size: 20; -fx-font-weight: bold;"/>
+        <Button text = "Upload new file" onAction = "#fileUpload"/>
     </children>
 </VBox>

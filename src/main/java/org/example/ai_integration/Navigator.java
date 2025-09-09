@@ -17,6 +17,7 @@ public final class Navigator {
     private static final String LOGIN_FXML  = "/org/example/ai_integration/LoginScene.fxml";
     private static final String SIGNUP_FXML = "/org/example/ai_integration/ApplicationEntryScene.fxml";
     private static final String DASHBOARD_FXML = "/org/example/ai_integration/DashboardScene.fxml";
+    private static final String FILEUPLOADQUIZ_FXML = "/org/example/ai_integration/quiz-view.fxml";
     private User loggedinUser;
     private static Scene scene;
     private static Stage stage; // optional: to update title
@@ -43,6 +44,13 @@ public final class Navigator {
         ensureInitialized();
         scene.setRoot(load(DASHBOARD_FXML));
         if(stage != null) stage.setTitle("Dashboard");
+    }
+
+    public static void toFileUpload() throws IOException{
+        ensureInitialized();
+        scene.setRoot(load(FILEUPLOADQUIZ_FXML));
+        scene.getStylesheets().add(Objects.requireNonNull(Navigator.class.getResource("/org/example/ai_integration/quiz.css")).toExternalForm());
+        if(stage != null) stage.setTitle("Upload new file");
     }
 
     private static Parent load(String path) throws IOException {

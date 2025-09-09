@@ -1,7 +1,9 @@
 package org.example.ai_integration.controls;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import org.example.ai_integration.Navigator;
 import org.example.ai_integration.model.User;
 import org.example.ai_integration.model.UserManager;
 
@@ -11,4 +13,12 @@ public class DashboardController {
         WelcomeLabel.setText("Hello " + UserManager.getInstance().getLoggedInUser().getName());
     }
 
+    @FXML
+    private void fileUpload(ActionEvent actionEvent) {
+        try {
+            Navigator.toFileUpload();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
