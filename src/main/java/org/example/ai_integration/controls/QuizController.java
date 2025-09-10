@@ -19,6 +19,8 @@ import org.example.ai_integration.QuizMcqRepo;
 /*import org.example.ai_integration.model.CreateSchema;*/
 import org.example.ai_integration.model.FileUtil;
 import org.example.ai_integration.model.QuizAPI;
+import org.example.ai_integration.model.QuizManager;
+import org.example.ai_integration.model.UserManager;
 
 import java.util.*;
 
@@ -47,21 +49,22 @@ public class QuizController {
     private long quizId;
     private long scoreId;
     private int currentIndex = 0;
-    private boolean isFromLibrary = false;
     private List<QuizDao.McqQuestion> mcqQuestions = new ArrayList<>();
     private final Map<Long, Integer> selectedByQuestionId = new HashMap<>();
 
-    private static final long CURRENT_USER_ID = 1L;
-    public void setIsFromLibrary(boolean isFromLibrary){this.isFromLibrary = isFromLibrary;}
+    private static final long CURRENT_USER_ID = Long.parseLong(UserManager.getInstance().getLoggedInUser().getUserID());
+
     @FXML
     private void initialize() {
 
-        if(isFromLibrary == false){
+        if(!QuizManager.getInstance().isQuizSelected()){
             showUploadCard();
             startQuizButton.setDisable(true);
         }
-        if(isFromLibrary == true){
+        if(QuizManager.getInstance().isQuizSelected()){
             showQuizCard();
+            quizId = QuizManager.getInstance().getQuiz().getQuizID();
+            startQuizFromLibrary();
         }
 
         // Drag & drop upload
@@ -134,6 +137,7 @@ public class QuizController {
     private void startQuizFromLibrary(){
         new Thread(() -> {
             try {
+                scoreId = QuizDao.startAttempt(quizId, CURRENT_USER_ID);
                 mcqQuestions = QuizDao.loadQuestions(quizId);
 
                 Platform.runLater(() -> {

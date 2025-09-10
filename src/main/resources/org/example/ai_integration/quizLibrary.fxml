@@ -18,6 +18,7 @@
 <children>
    <Label text = "Quiz Library"/>
     <fx:define> <ToggleGroup fx:id="DynamicToggleGroup"/></fx:define>
+    <VBox fx:id = "radioButtonsContainer"></VBox>
     <Button text = "Start selected quiz" onAction="#startQuiz"/>
 </children>
 </VBox>
