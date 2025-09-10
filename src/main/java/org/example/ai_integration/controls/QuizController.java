@@ -1,6 +1,7 @@
 package org.example.ai_integration.controls;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -14,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.RadioButton;
+import org.example.ai_integration.Navigator;
 import org.example.ai_integration.QuizDao;
 import org.example.ai_integration.QuizMcqRepo;
 /*import org.example.ai_integration.model.CreateSchema;*/
@@ -110,7 +112,7 @@ public class QuizController {
         startQuizButton.setOnAction(e -> startQuiz());
         backButton.setOnAction(e -> { if (currentIndex > 0) { currentIndex--; renderQuestion(); } });
         nextButton.setOnAction(e -> onNext());
-        takeNewQuizButton.setOnAction(e -> showUploadCard());
+        takeNewQuizButton.setOnAction(e -> goToQuizLibrary());
 
         retakeButton.setOnAction(e -> beginRetakeSelected());
         attemptsList.getSelectionModel().selectedItemProperty().addListener((obs, old, sel) ->
@@ -124,6 +126,13 @@ public class QuizController {
 
     private Stage getStage() { return (Stage) rootStack.getScene().getWindow(); }
 
+    private void goToQuizLibrary(){
+            try {
+                Navigator.toQuizLibrary();
+            } catch (Exception e) {
+                e.printStackTrace(); alert(Alert.AlertType.ERROR, "Navigation error", e.getMessage());
+            }
+    }
     private void handlePickedFile(File f) {
         try {
             uploadedContent = FileUtil.readFileContent(f);
@@ -303,6 +312,12 @@ public class QuizController {
         if (sel != null) beginRetake(sel.quizID);
     }
 
+    private static void alert(Alert.AlertType t, String title, String msg) {
+        Alert a = new Alert(t);
+        a.setTitle(title); a.setHeaderText(null); a.setContentText(msg);
+        a.showAndWait();
+    }
+
     private void beginRetake(long quizIdToRetake) {
         new Thread(() -> {
             try {
@@ -323,5 +338,7 @@ public class QuizController {
                 });
             }
         }).start();
+
+
     }
 }

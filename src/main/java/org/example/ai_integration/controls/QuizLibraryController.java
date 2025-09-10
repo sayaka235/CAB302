@@ -71,4 +71,12 @@ public class QuizLibraryController {
         a.setTitle(title); a.setHeaderText(null); a.setContentText(msg);
         a.showAndWait();
     }
+    @FXML
+    private void goToDashBoard(ActionEvent actionEvent) {
+        try {
+            Navigator.toDashboard();
+        } catch (Exception e) {
+            e.printStackTrace();alert(Alert.AlertType.ERROR, "Navigation error", e.getMessage());
+        }
+    }
 }

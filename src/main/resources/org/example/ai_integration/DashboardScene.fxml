@@ -1,22 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
-<VBox xmlns="http://javafx.com/javafx/21"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="org.example.ai_integration.controls.DashboardController"
-      alignment="CENTER" spacing="12" prefWidth="480" prefHeight="320"
-      style="-fx-background-color:#f3f4f6;">
+
+<VBox alignment="CENTER" prefHeight="320" prefWidth="480" spacing="12" style="-fx-background-color:#f3f4f6;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.ai_integration.controls.DashboardController">
     <padding>
-        <Insets top="16" right="16" bottom="16" left="16"/>
+        <Insets bottom="16" left="16" right="16" top="16" />
     </padding>
     <children>
-        <Label fx:id = "WelcomeLabel" style="-fx-font-size: 20; -fx-font-weight: bold;"/>
-        <Button text = "Upload new file" onAction = "#fileUpload"/>
-        <Button text = "Go to quiz library" onAction = "#quizLibrary"/>
+        <HBox><Button onAction ="#logOut" text="Log Out"/></HBox>
+        <Label fx:id="WelcomeLabel" style="-fx-font-size: 20; -fx-font-weight: bold;" />
+        <Button onAction="#fileUpload" text="Upload new file" />
+        <Button onAction="#quizLibrary" text="Go to quiz library" />
     </children>
 </VBox>

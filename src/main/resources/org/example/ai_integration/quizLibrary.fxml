@@ -16,6 +16,7 @@
     <Insets top="16" right="16" bottom="16" left="16"/>
 </padding>
 <children>
+    <HBox><Button onAction ="#goToDashBoard" text="Home"/></HBox>
    <Label text = "Quiz Library"/>
     <fx:define> <ToggleGroup fx:id="DynamicToggleGroup"/></fx:define>
     <VBox fx:id = "radioButtonsContainer"></VBox>

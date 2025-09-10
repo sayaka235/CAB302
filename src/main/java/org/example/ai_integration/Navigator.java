@@ -15,7 +15,7 @@ public final class Navigator {
     private static final String LOGIN_FXML  = "/org/example/ai_integration/LoginScene.fxml";
     private static final String SIGNUP_FXML = "/org/example/ai_integration/ApplicationEntryScene.fxml";
     private static final String DASHBOARD_FXML = "/org/example/ai_integration/DashboardScene.fxml";
-    private static final String FILEUPLOADQUIZ_FXML = "/org/example/ai_integration/quiz-view.fxml";
+    private static final String QUIZ_FXML = "/org/example/ai_integration/quiz-view.fxml";
     private static final String QUIZLIBRARY_FXML = "/org/example/ai_integration/quizLibrary.fxml";
     private User loggedinUser;
     private static Scene scene;
@@ -47,9 +47,9 @@ public final class Navigator {
 
     public static void toQuiz() throws IOException{
         ensureInitialized();
-        scene.setRoot(load(FILEUPLOADQUIZ_FXML));
+        scene.setRoot(load(QUIZ_FXML));
         scene.getStylesheets().add(Objects.requireNonNull(Navigator.class.getResource("/org/example/ai_integration/quiz.css")).toExternalForm());
-        if(stage != null) stage.setTitle("Upload new file");
+        if(stage != null) stage.setTitle("Quiz");
     }
     public static void toQuizLibrary() throws IOException{
         ensureInitialized();

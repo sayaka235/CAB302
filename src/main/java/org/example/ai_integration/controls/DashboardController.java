@@ -2,6 +2,7 @@ package org.example.ai_integration.controls;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import org.example.ai_integration.Navigator;
 import org.example.ai_integration.model.UserManager;
@@ -17,7 +18,7 @@ public class DashboardController {
         try {
             Navigator.toQuiz();
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace();alert(Alert.AlertType.ERROR, "Navigation error", e.getMessage());
         }
     }
     @FXML
@@ -25,7 +26,21 @@ public class DashboardController {
         try {
             Navigator.toQuizLibrary();
         } catch (Exception e) {
+            e.printStackTrace();alert(Alert.AlertType.ERROR, "Navigation error", e.getMessage());
+        }
+    }
+    @FXML
+    private void logOut(ActionEvent actionEvent) {
+        try {
+            Navigator.toSignup();
+            UserManager.getInstance().setLoggedInUser(null);
+        } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    private static void alert(Alert.AlertType t, String title, String msg) {
+        Alert a = new Alert(t);
+        a.setTitle(title); a.setHeaderText(null); a.setContentText(msg);
+        a.showAndWait();
     }
 }
