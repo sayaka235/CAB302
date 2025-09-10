@@ -43,8 +43,9 @@ public class LoginController {
                     //String dbEmail = rs.getString("email");
                     //String dbPasswordHash = rs.getString("passwordHash");
                     LocalDate dbDob = LocalDate.parse(rs.getString("dob"));
+                    String dbuserID  = rs.getString("id");
 
-                    User loggedInUser = new User(email, dbFirstname, dbLastname, dbDob, sha256(pass));
+                    User loggedInUser = new User(email, dbFirstname, dbLastname, dbDob, sha256(pass), dbuserID);
                     UserManager.getInstance().setLoggedInUser(loggedInUser);
                     alert(Alert.AlertType.INFORMATION, "Welcome",  "Hello " + loggedInUser.getName()+ ", login successful." );
                     Navigator.toDashboard();

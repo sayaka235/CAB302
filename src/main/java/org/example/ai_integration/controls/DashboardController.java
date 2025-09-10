@@ -4,7 +4,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import org.example.ai_integration.Navigator;
-import org.example.ai_integration.model.User;
 import org.example.ai_integration.model.UserManager;
 
 public class DashboardController {
@@ -16,7 +15,7 @@ public class DashboardController {
     @FXML
     private void fileUpload(ActionEvent actionEvent) {
         try {
-            Navigator.toFileUpload();
+            Navigator.toQuiz();
         } catch (Exception e) {
             e.printStackTrace();
         }

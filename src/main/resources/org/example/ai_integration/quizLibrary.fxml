@@ -17,5 +17,7 @@
 </padding>
 <children>
    <Label text = "Quiz Library"/>
+    <fx:define> <ToggleGroup fx:id="DynamicToggleGroup"/></fx:define>
+    <Button text = "Start selected quiz" onAction="#startQuiz"/>
 </children>
 </VBox>

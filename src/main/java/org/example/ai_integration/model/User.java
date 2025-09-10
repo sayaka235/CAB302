@@ -8,6 +8,7 @@ public class User {
     private String lastname;
     private LocalDate dob;
     private String password;
+    private String userID;
 
     public User(String email, String firstname, String lastname, LocalDate dob, String password){
         this.email = email;
@@ -15,6 +16,14 @@ public class User {
         this.lastname = lastname;
         this.dob = dob;
         this.password = password;
+    }
+    public User(String email, String firstname, String lastname, LocalDate dob, String password, String userID){
+        this.email = email;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.dob = dob;
+        this.password = password;
+        this.userID = userID;
     }
 
     public User(){
@@ -27,4 +36,5 @@ public class User {
     public LocalDate getDob(){return dob;}
     public String getPassword(){return password;}
     public String getName(){return firstname+ " " +lastname;}
+    public String getUserID(){return userID;}
 }

@@ -40,23 +40,29 @@ public class QuizController {
     @FXML private ListView<QuizDao.AttemptRow> attemptsList;
     @FXML private Button retakeButton;
     @FXML private TextArea outputArea;
+    @FXML private Button quizSelectedFromLibrary;
 
     private File selectedImageFile;
     private String uploadedContent = null;
     private long quizId;
     private long scoreId;
     private int currentIndex = 0;
-
+    private boolean isFromLibrary = false;
     private List<QuizDao.McqQuestion> mcqQuestions = new ArrayList<>();
     private final Map<Long, Integer> selectedByQuestionId = new HashMap<>();
 
     private static final long CURRENT_USER_ID = 1L;
-
+    public void setIsFromLibrary(boolean isFromLibrary){this.isFromLibrary = isFromLibrary;}
     @FXML
     private void initialize() {
 
-        showUploadCard();
-        startQuizButton.setDisable(true);
+        if(isFromLibrary == false){
+            showUploadCard();
+            startQuizButton.setDisable(true);
+        }
+        if(isFromLibrary == true){
+            showQuizCard();
+        }
 
         // Drag & drop upload
         dropZone.setOnDragOver(e -> {
@@ -124,6 +130,25 @@ public class QuizController {
             uploadHint.setText("Failed to read file: " + ex.getMessage());
             startQuizButton.setDisable(true);
         }
+    }
+    private void startQuizFromLibrary(){
+        new Thread(() -> {
+            try {
+                mcqQuestions = QuizDao.loadQuestions(quizId);
+
+                Platform.runLater(() -> {
+                    selectedByQuestionId.clear();
+                    currentIndex = 0;
+                    renderQuestion();
+                });
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                Platform.runLater(() -> {
+                    showUploadCard();
+                    if (outputArea != null) outputArea.setText("Failed to load quiz: " + ex.getMessage());
+                });
+            }
+        }).start();
     }
 
     private void startQuiz() {

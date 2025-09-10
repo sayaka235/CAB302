@@ -4,9 +4,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.example.ai_integration.controls.DashboardController;
 import org.example.ai_integration.model.User;
-import org.example.ai_integration.model.UserManager;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -47,7 +45,7 @@ public final class Navigator {
         if(stage != null) stage.setTitle("Dashboard");
     }
 
-    public static void toFileUpload() throws IOException{
+    public static void toQuiz() throws IOException{
         ensureInitialized();
         scene.setRoot(load(FILEUPLOADQUIZ_FXML));
         scene.getStylesheets().add(Objects.requireNonNull(Navigator.class.getResource("/org/example/ai_integration/quiz.css")).toExternalForm());
