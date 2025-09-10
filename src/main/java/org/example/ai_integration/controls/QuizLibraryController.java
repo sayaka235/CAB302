@@ -37,6 +37,7 @@ public class QuizLibraryController {
                         quizList.add(quiz);
                         RadioButton radioButton = new RadioButton(quizTitle);
                         radioButtonsContainer.getChildren().add(radioButton);
+                        radioButton.setToggleGroup(DynamicToggleGroup);
                     }
                 }
             } catch (Exception e) {
@@ -45,24 +46,24 @@ public class QuizLibraryController {
     }
     @FXML
     private void startQuiz(ActionEvent actionEvent) {
-        try{
-        RadioButton selectedRadioButton = (RadioButton) DynamicToggleGroup.getSelectedToggle();
-        if (selectedRadioButton != null) {
-            String selectedOption = selectedRadioButton.getText();
-            Quiz selectedQuiz = null;
-            for (Quiz quiz : quizList) {
-                if (quiz.geTitle().equals(selectedOption)) {
-                    selectedQuiz = quiz;
-                    break;
+        try {
+            RadioButton selectedRadioButton = (RadioButton) DynamicToggleGroup.getSelectedToggle();
+            if (selectedRadioButton != null) {
+                String selectedOption = selectedRadioButton.getText();
+                Quiz selectedQuiz = null;
+                for (Quiz quiz : quizList) {
+                    if (quiz.geTitle().equals(selectedOption)) {
+                        selectedQuiz = quiz;
+                        break;
+                    }
                 }
+                QuizManager.getInstance().setQuiz(selectedQuiz);
+                Navigator.toQuiz();
             }
-            QuizManager.getInstance().setQuiz(selectedQuiz);
-            try { Navigator.toQuiz(); }
-            catch (Exception e) { e.printStackTrace(); alert(Alert.AlertType.ERROR, "Navigation error", e.getMessage()); }
-
-        } } catch (Exception e){
-            alert(Alert.AlertType.ERROR, "No quiz selected", e.getMessage());
         }
+            catch(Exception e){
+                alert(Alert.AlertType.ERROR, "No quiz selected", e.getMessage());
+            }
     }
 
     private static void alert(Alert.AlertType t, String title, String msg) {
