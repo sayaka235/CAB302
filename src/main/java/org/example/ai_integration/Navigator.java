@@ -56,6 +56,10 @@ public final class Navigator {
         scene.setRoot(load(QUIZLIBRARY_FXML));
         if(stage != null) stage.setTitle("Quiz Library");
     }
+    public static void toNotesLibrary() throws IOException{
+        ensureInitialized();
+        scene.setRoot(load(D));
+    }
 
     private static Parent load(String path) throws IOException {
         var url = Navigator.class.getResource(path);

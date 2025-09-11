@@ -9,6 +9,7 @@ module org.example.ai_integration {
 
     // sql database
     requires java.sql;
+    requires java.desktop;
 
 
     opens org.example.ai_integration to javafx.fxml;

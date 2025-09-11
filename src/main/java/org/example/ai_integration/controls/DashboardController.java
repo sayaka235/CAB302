@@ -7,6 +7,8 @@ import javafx.scene.control.Label;
 import org.example.ai_integration.Navigator;
 import org.example.ai_integration.model.UserManager;
 
+import javax.swing.*;
+
 public class DashboardController {
     @FXML private Label WelcomeLabel;
     public void initialize(){
@@ -19,6 +21,12 @@ public class DashboardController {
             Navigator.toQuiz();
         } catch (Exception e) {
             e.printStackTrace();alert(Alert.AlertType.ERROR, "Navigation error", e.getMessage());
+        }
+    }
+    @FXML
+    private void notesLibrary(ActionEvent actionEvent){
+        try{
+            Navigator.to
         }
     }
     @FXML
