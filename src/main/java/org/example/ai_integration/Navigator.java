@@ -17,6 +17,7 @@ public final class Navigator {
     private static final String DASHBOARD_FXML = "/org/example/ai_integration/DashboardScene.fxml";
     private static final String QUIZ_FXML = "/org/example/ai_integration/quiz-view.fxml";
     private static final String QUIZLIBRARY_FXML = "/org/example/ai_integration/quizLibrary.fxml";
+    private static final String NOTESLIBRARY_FXML = "/org/example/ai_integration/notesLibrary.fxml";
     private User loggedinUser;
     private static Scene scene;
     private static Stage stage; // optional: to update title
@@ -58,7 +59,8 @@ public final class Navigator {
     }
     public static void toNotesLibrary() throws IOException{
         ensureInitialized();
-        scene.setRoot(load(D));
+        scene.setRoot(load(NOTESLIBRARY_FXML));
+        if(stage != null) stage.setTitle("Notes Library");
     }
 
     private static Parent load(String path) throws IOException {

@@ -13,6 +13,6 @@
         <Label fx:id="WelcomeLabel" style="-fx-font-size: 20; -fx-font-weight: bold;" />
         <Button onAction="#fileUpload" text="Upload new file" />
         <Button onAction="#quizLibrary" text="Go to quiz library" />
-        <Button onAction="#notesLibrary" text = "Go to notes library"
+        <Button onAction="#notesLibrary" text = "Go to notes library"/>
     </children>
 </VBox>

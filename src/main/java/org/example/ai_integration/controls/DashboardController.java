@@ -26,7 +26,9 @@ public class DashboardController {
     @FXML
     private void notesLibrary(ActionEvent actionEvent){
         try{
-            Navigator.to
+            Navigator.toNotesLibrary();
+        } catch (Exception e){
+            e.printStackTrace();alert(Alert.AlertType.ERROR, "Navigation error", e.getMessage());
         }
     }
     @FXML
