@@ -1,112 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.DatePicker?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.PasswordField?>
-<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.effect.DropShadow?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.paint.Color?>
-<?import javafx.scene.paint.LinearGradient?>
-<?import javafx.scene.paint.Stop?>
-<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" prefHeight="360" prefWidth="480" spacing="12"
-      style="-fx-background-color:#f3f4f6;"
-      xmlns="http://javafx.com/javafx/24.0.1"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="org.example.ai_integration.controls.SignupController">
-
-    <padding>
-        <Insets bottom="16" left="16" right="16" top="16"/>
-    </padding>
+<StackPane xmlns="http://javafx.com/javafx/24.0.1"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="org.example.ai_integration.controls.SignupController"
+           style="-fx-background-color: linear-gradient(to bottom, #b3c7f7, #244678);">
 
     <children>
-        <AnchorPane prefHeight="-1.0" prefWidth="-1.0" style="-fx-background-color: #b3c7f7;" VBox.vgrow="ALWAYS">
-            <children>
-                <!-- Background -->
-                <Rectangle arcHeight="5.0" arcWidth="5.0" height="458.0" layoutX="-33.0" layoutY="-12.0"
-                           stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="730.0">
-                    <fill>
-                        <LinearGradient endX="0.5308" endY="1.0" startX="0.5118" startY="0.0853">
-                            <stops>
-                                <Stop>
-                                    <color>
-                                        <Color red="0.7019" green="0.7803" blue="0.9686"/>
-                                    </color>
-                                </Stop>
-                                <Stop offset="1.0">
-                                    <color>
-                                        <Color red="0.2446" green="0.4043" blue="0.7237"/>
-                                    </color>
-                                </Stop>
-                            </stops>
-                        </LinearGradient>
-                    </fill>
-                </Rectangle>
+        <!-- Signup card -->
+        <VBox alignment="CENTER" spacing="10"
+              maxWidth="400" maxHeight="500"
+              style="-fx-background-color: white; -fx-background-radius: 10;">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
 
-                <!-- Card -->
-                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="418.0" layoutX="178.0" layoutY="12.0"
-                           stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="333.0">
-                    <effect>
-                        <DropShadow blurType="ONE_PASS_BOX" height="12.22" offsetX="10.0" offsetY="10.0"
-                                    radius="7.68" width="20.51">
-                            <color>
-                                <Color opacity="0.2"/>
-                            </color>
-                        </DropShadow>
-                    </effect>
-                </Rectangle>
+            <effect>
+                <DropShadow blurType="ONE_PASS_BOX" radius="8" offsetX="4" offsetY="4"
+                            color="rgba(0,0,0,0.2)"/>
+            </effect>
 
-                <!-- Labels and Inputs -->
-                <Label layoutX="316.0" layoutY="64.0" text="Sign up" textFill="BLACK">
-                    <font>
-                        <Font size="21.0"/>
-                    </font>
-                </Label>
+            <!-- Titles -->
+            <Label text="Star Student" textFill="BLACK">
+                <font><Font name="Verdana" size="26"/></font>
+            </Label>
+            <Label text="Sign up" textFill="BLACK">
+                <font><Font size="21"/></font>
+            </Label>
 
-                <Label layoutX="271.0" layoutY="22.0" text="Star Student" textFill="BLACK">
-                    <font>
-                        <Font name="Verdana" size="26.0"/>
-                    </font>
-                </Label>
+            <!-- First Name -->
+            <Label text="First Name:" textFill="#9f9f9f"/>
+            <TextField fx:id="firstNameField" promptText="First name" maxWidth="300"/>
 
-                <Label layoutX="199.0" layoutY="107.0" text="First Name:" textFill="#9f9f9f"/>
-                <TextField fx:id="firstNameField1" layoutX="278.0" layoutY="107.0" promptText="First name"/>
+            <!-- Last Name -->
+            <Label text="Last Name:" textFill="#9f9f9f"/>
+            <TextField fx:id="lastNameField" promptText="Last name" maxWidth="300"/>
 
-                <Label layoutX="196.0" layoutY="146.0" text="Last Name:" textFill="#9f9f9f"/>
-                <TextField fx:id="lastNameField1" layoutX="278.0" layoutY="144.0" promptText="Last name"/>
+            <!-- Email -->
+            <Label text="Email:" textFill="#9f9f9f"/>
+            <TextField fx:id="emailField" promptText="Email" maxWidth="300"/>
 
-                <Label layoutX="214.0" layoutY="187.0" text="Email:" textFill="#9f9f9f"/>
-                <TextField fx:id="emailField1" layoutX="277.0" layoutY="185.0" prefHeight="25.0" prefWidth="151.0" promptText="Email"/>
+            <!-- Date of Birth -->
+            <Label text="Date Of Birth:" textFill="#9f9f9f"/>
+            <DatePicker fx:id="dobPicker" maxWidth="300"/>
 
-                <Label layoutX="182.0" layoutY="224.0" text="Date Of Birth:" textFill="#9f9f9f"/>
-                <DatePicker fx:id="dobPicker1" layoutX="268.0" layoutY="222.0"/>
+            <!-- Password -->
+            <Label text="Password:" textFill="#9f9f9f"/>
+            <HBox spacing="5" alignment="CENTER">
+                <PasswordField fx:id="passwordField" promptText="Password" maxWidth="200"/>
+                <TextField fx:id="passwordTextField" promptText="Password"
+                           visible="false" managed="false" maxWidth="200"/>
+                <CheckBox fx:id="showPasswordCheckBox" text="Show"/>
+            </HBox>
 
-                <Label layoutX="200.0" layoutY="262.0" text="Password:" textFill="#9f9f9f"/>
-                <!-- Masked password -->
-                <PasswordField fx:id="passwordField" layoutX="271.0" layoutY="261.0" promptText="Password"/>
-                <!-- Unmasked password (hidden initially) -->
-                <TextField fx:id="passwordTextField" layoutX="271.0" layoutY="261.0"
-                           promptText="Password" visible="false" managed="false"/>
-                <!-- Show/hide checkbox -->
-                <CheckBox fx:id="showPasswordCheckBox" layoutX="430.0" layoutY="261.0" text="Show"/>
+            <!-- Sign Up button -->
+            <Button fx:id="signupButton" text="Sign Up" onAction="#handleSignup"
+                    style="-fx-background-color: #054fb9; -fx-text-fill: white; -fx-background-radius: 5;"
+                    maxWidth="150"/>
 
-                <!-- Buttons -->
-                <Button fx:id="signupButton" layoutX="305.0" layoutY="314.0" onAction="#handleSignup"
-                        prefHeight="33.0" prefWidth="87.0"
-                        style="-fx-background-color: #054fb9; -fx-background-radius: 10%;"
-                        text="Sign Up" textFill="WHITE" underline="true"/>
-
-                <Label layoutX="251.0" layoutY="364.0" text="Don't have an account?"/>
-                <Button layoutX="391.0" layoutY="358.0" onAction="#goLogin" prefHeight="30.0" prefWidth="69.0"
-                        style="-fx-background-color: #054fb9;" text="Log in" textFill="WHITE" underline="true"/>
-            </children>
-        </AnchorPane>
+            <!-- Login link -->
+            <HBox alignment="CENTER" spacing="5">
+                <Label text="Already have an account?"/>
+                <Button text="Log in" onAction="#goLogin"
+                        style="-fx-background-color: #054fb9; -fx-text-fill: white; -fx-background-radius: 5;"/>
+            </HBox>
+        </VBox>
     </children>
-</VBox>
+</StackPane>
