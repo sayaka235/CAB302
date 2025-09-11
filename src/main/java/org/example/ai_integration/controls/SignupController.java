@@ -14,6 +14,10 @@ public class SignupController {
     @FXML private TextField emailField, firstNameField, lastNameField;
     @FXML private DatePicker dobPicker;
     @FXML private PasswordField passwordField;
+    @FXML private TextField passwordTextField;
+    @FXML private CheckBox showPasswordCheckBox;
+
+
     private Signup signup;
 
     public SignupController() {
@@ -43,4 +47,26 @@ public class SignupController {
         } catch (Exception e) { throw new RuntimeException(e); }
     }
     private static void alert(Alert.AlertType t, String h, String c){ var a=new Alert(t); a.setHeaderText(h); a.setContentText(c); a.showAndWait(); }
+
+
+    @FXML
+    public void initialize() {
+        // Sync both fields
+        passwordTextField.textProperty().bindBidirectional(passwordField.textProperty());
+
+        // Toggle visibility
+        showPasswordCheckBox.selectedProperty().addListener((obs, wasSelected, isSelected) -> {
+            if (isSelected) {
+                passwordTextField.setVisible(true);
+                passwordTextField.setManaged(true);
+                passwordField.setVisible(false);
+                passwordField.setManaged(false);
+            } else {
+                passwordField.setVisible(true);
+                passwordField.setManaged(true);
+                passwordTextField.setVisible(false);
+                passwordTextField.setManaged(false);
+            }
+        });
+    }
 }
