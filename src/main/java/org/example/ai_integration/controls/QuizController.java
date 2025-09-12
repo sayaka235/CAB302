@@ -73,9 +73,15 @@ public class QuizController {
         CURRENT_USER_ID = Long.parseLong(user.getUserID());
 
         try { CreateSchema.initAll(); } catch (Exception ignored) {}
+        if(QuizManager.getInstance().getQuiz() == null){
+            showUploadCard();
+            startQuizButton.setDisable(true);
+        }if(!(QuizManager.getInstance().getQuiz() == null)){
+            quizId = QuizManager.getInstance().getQuiz().getQuizID();
+            showQuizCard();
+            startQuizFromLibrary();
+        }
 
-        showUploadCard();
-        startQuizButton.setDisable(true);
 
         // Drag & drop upload
         dropZone.setOnDragOver(e -> {
@@ -183,6 +189,7 @@ public class QuizController {
                 Platform.runLater(() -> {
                     selectedByQuestionId.clear();
                     currentIndex = 0;
+                    restoreQuizNavHandlers();
                     renderQuestion();
                 });
             } catch (Exception ex) {
