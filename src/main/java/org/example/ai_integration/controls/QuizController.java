@@ -402,7 +402,7 @@ public class QuizController {
 
         nextButton.setDisable(false);
         nextButton.setText("Take New Quiz");
-        nextButton.setOnAction(e -> showUploadCard());  // this will reset state (see section B)
+        nextButton.setOnAction(e -> goToQuizLibrary());  // this will reset state (see section B)
     }
 
     private void restoreQuizNavHandlers() {
