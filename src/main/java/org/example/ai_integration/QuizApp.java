@@ -12,21 +12,21 @@ import java.util.Objects;
 public class QuizApp extends Application {
 
     @Override
-    public void start(Stage stage) throws Exception{
-        URL fxml = getClass().getResource("/org/example/ai_integration/quiz-view.fxml");
-        if (fxml == null)
-            throw new RuntimeException("FXML file not found: quiz-view.fxml");
+    public void start(Stage primaryStage) throws Exception {
+        try { org.example.ai_integration.model.CreateSchema.initAll(); } catch (Exception ignored) {}
 
-        FXMLLoader loader = new FXMLLoader(fxml);
-        Parent root = loader.load();
-        Scene scene = new Scene(root, 900, 700);
-        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/org/example/ai_integration/quiz.css")).toExternalForm());
-        stage.setScene(scene);
-        stage.setTitle("AI Quiz Generator");
-        stage.show();
-    }
+        Navigator.init(primaryStage, new javafx.scene.layout.StackPane(), 1200, 800);
 
-    public static void main(String[] args) {
-        launch();
+        var user = org.example.ai_integration.model.UserManager
+                .getInstance().getLoggedInUser();
+
+        if (user == null) {
+            Navigator.toLogin();
+            primaryStage.setTitle("Login");
+        } else {
+            Navigator.toQuizLibrary();
+            primaryStage.setTitle("Quiz Library");
+        }
+        primaryStage.show();
     }
 }

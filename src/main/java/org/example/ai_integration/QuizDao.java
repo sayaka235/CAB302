@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class QuizDao {
-    private QuizDao() {}
 
     // -----------------------------
     // Question entity
@@ -16,13 +15,13 @@ public final class QuizDao {
         public final long questionID;
         public final String text;
         public final String[] options;
-        public final int correctOption;
+        public final int correctOptionNumber;
 
         public McqQuestion(long id, String text, String o1, String o2, String o3, String o4, int correct) {
             this.questionID = id;
             this.text = text;
             this.options = new String[]{o1, o2, o3, o4};
-            this.correctOption = correct;
+            this.correctOptionNumber = correct;
         }
     }
 
@@ -209,19 +208,69 @@ public final class QuizDao {
         }
     }
 
-    // -----------------------------
-    // Upsert answer
-    // -----------------------------
-    public static void upsertAnswer(long scoreId, long questionId, int userOptionNumber, int correctOptionNumber)
-            throws SQLException {
-        try (Connection c = Database.getConnection()) {
-            try (PreparedStatement del = c.prepareStatement(
-                    "DELETE FROM QuizAttemptAnswer WHERE scoreID=? AND questionID=?")) {
-                del.setLong(1, scoreId);
-                del.setLong(2, questionId);
-                del.executeUpdate();
+    public static void savePickedAnswer(long scoreId, long questionId, int userOption1to4) throws SQLException {
+        String sql = """
+        INSERT INTO QuizAttemptAnswer(scoreID, questionID, userOptionNumber, isCorrect)
+        SELECT ?, ?, ?, CASE WHEN ? = q.correctOptionNumber THEN 1 ELSE 0 END
+        FROM QuizQuestions q
+        WHERE q.questionID = ?
+        ON CONFLICT(scoreID, questionID) DO UPDATE SET
+            userOptionNumber = excluded.userOptionNumber,
+            isCorrect        = excluded.isCorrect,
+            answeredAt       = datetime('now');
+    """;
+        try (var c = Database.getConnection(); var ps = c.prepareStatement(sql)) {
+            ps.setLong(1, scoreId);
+            ps.setLong(2, questionId);
+            ps.setInt(3, userOption1to4);
+            ps.setInt(4, userOption1to4);
+            ps.setLong(5, questionId);
+            ps.executeUpdate();
+        }
+    }
+
+    public static List<ResultRow> getAttemptResults(long scoreId) throws SQLException {
+        String sql = """
+        SELECT q.questionID,
+               q.questionText,
+               q.option1, q.option2, q.option3, q.option4,
+               q.correctOptionNumber,        -- 1..4
+               a.userOptionNumber,           -- 1..4
+               a.isCorrect                   -- 0/1
+        FROM QuizAttemptAnswer a
+        JOIN QuizQuestions q ON q.questionID = a.questionID
+        WHERE a.scoreID = ?
+        ORDER BY q.questionID
+    """;
+        try (var c = Database.getConnection(); var ps = c.prepareStatement(sql)) {
+            ps.setLong(1, scoreId);
+            try (var rs = ps.executeQuery()) {
+                List<ResultRow> out = new ArrayList<>();
+                while (rs.next()) {
+                    out.add(new ResultRow(
+                            rs.getLong(1),
+                            rs.getString(2),
+                            new String[]{ rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6) },
+                            rs.getInt(7),
+                            rs.getInt(8),
+                            rs.getInt(9) == 1
+                    ));
+                }
+                return out;
             }
-            recordAnswer(scoreId, questionId, userOptionNumber, correctOptionNumber);
+        }
+    }
+
+    public static final class ResultRow {
+        public final long questionID;
+        public final String text;
+        public final String[] options;
+        public final int correct;
+        public final int chosen;
+        public final boolean isCorrect;
+        public ResultRow(long id, String t, String[] opts, int correct, int chosen, boolean ok) {
+            this.questionID = id; this.text = t; this.options = opts;
+            this.correct = correct; this.chosen = chosen; this.isCorrect = ok;
         }
     }
 }

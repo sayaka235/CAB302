@@ -1,7 +1,6 @@
 package org.example.ai_integration.controls;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -19,10 +18,7 @@ import org.example.ai_integration.Navigator;
 import org.example.ai_integration.QuizDao;
 import org.example.ai_integration.QuizMcqRepo;
 /*import org.example.ai_integration.model.CreateSchema;*/
-import org.example.ai_integration.model.FileUtil;
-import org.example.ai_integration.model.QuizAPI;
-import org.example.ai_integration.model.QuizManager;
-import org.example.ai_integration.model.UserManager;
+import org.example.ai_integration.model.*;
 
 import java.util.*;
 
@@ -45,6 +41,7 @@ public class QuizController {
     @FXML private Button retakeButton;
     @FXML private TextArea outputArea;
     @FXML private Button quizSelectedFromLibrary;
+    @FXML private ScrollPane resultsScroll;
 
     private File selectedImageFile;
     private String uploadedContent = null;
@@ -54,20 +51,31 @@ public class QuizController {
     private List<QuizDao.McqQuestion> mcqQuestions = new ArrayList<>();
     private final Map<Long, Integer> selectedByQuestionId = new HashMap<>();
 
-    private static final long CURRENT_USER_ID = Long.parseLong(UserManager.getInstance().getLoggedInUser().getUserID());
+    private long CURRENT_USER_ID = -1;
 
     @FXML
     private void initialize() {
 
-        if(!QuizManager.getInstance().isQuizSelected()){
-            showUploadCard();
-            startQuizButton.setDisable(true);
+        var user = UserManager.getInstance().getLoggedInUser();
+        if (user == null) {
+            Platform.runLater(() -> {
+                try {
+                    Navigator.toLogin();
+                }
+                catch(Exception e) {
+                    e.printStackTrace();
+                    alert(Alert.AlertType.ERROR, "Not logged in", "Please log in before taking a quiz.");
+                }
+            });
+            return;
         }
-        if(QuizManager.getInstance().isQuizSelected()){
-            showQuizCard();
-            quizId = QuizManager.getInstance().getQuiz().getQuizID();
-            startQuizFromLibrary();
-        }
+
+        CURRENT_USER_ID = Long.parseLong(user.getUserID());
+
+        try { CreateSchema.initAll(); } catch (Exception ignored) {}
+
+        showUploadCard();
+        startQuizButton.setDisable(true);
 
         // Drag & drop upload
         dropZone.setOnDragOver(e -> {
@@ -120,11 +128,34 @@ public class QuizController {
         attemptsList.setOnMouseClicked(e -> { if (e.getClickCount() == 2) beginRetakeSelected(); });
     }
 
-    private void showUploadCard() { uploadCard.setVisible(true); quizCard.setVisible(false); historyCard.setVisible(false); }
-    private void showQuizCard()   { uploadCard.setVisible(false); quizCard.setVisible(true); historyCard.setVisible(false); }
-    private void showHistoryCard(){ uploadCard.setVisible(false); quizCard.setVisible(false); historyCard.setVisible(true); }
+    private void showUploadCard() {
+        uploadCard.setVisible(true);  uploadCard.setManaged(true);
+        quizCard.setVisible(false);   quizCard.setManaged(false);
+        historyCard.setVisible(false); historyCard.setManaged(false);
 
-    private Stage getStage() { return (Stage) rootStack.getScene().getWindow(); }
+        uploadedContent = null;
+        startQuizButton.setDisable(true);
+        uploadHint.setText("Drop a file here or choose one to start a new quiz.");
+        selectedByQuestionId.clear();
+        mcqQuestions.clear();
+        currentIndex = 0;
+
+        restoreQuizNavHandlers();
+    }
+    private void showQuizCard()   {
+        uploadCard.setVisible(false); uploadCard.setManaged(false);
+        quizCard.setVisible(true);    quizCard.setManaged(true);
+        historyCard.setVisible(false); historyCard.setManaged(false);
+    }
+    private void showHistoryCard(){
+        uploadCard.setVisible(false); uploadCard.setManaged(false);
+        quizCard.setVisible(false);   quizCard.setManaged(false);
+        historyCard.setVisible(true); historyCard.setManaged(true);
+    }
+
+    private Stage getStage() {
+        return (Stage) rootStack.getScene().getWindow();
+    }
 
     private void goToQuizLibrary(){
             try {
@@ -172,6 +203,7 @@ public class QuizController {
 
         if (outputArea != null) outputArea.setText("Generating Multiple Choice quiz...");
         showQuizCard();
+        restoreQuizNavHandlers();
         nextButton.setDisable(true);
         backButton.setDisable(true);
 
@@ -191,6 +223,7 @@ public class QuizController {
                 Platform.runLater(() -> {
                     selectedByQuestionId.clear();
                     currentIndex = 0;
+                    restoreQuizNavHandlers();
                     renderQuestion();
                 });
             } catch (Exception ex) {
@@ -219,7 +252,7 @@ public class QuizController {
             String text = q.options[i];
             RadioButton rb = new RadioButton(text);
             rb.getStyleClass().add("radio-option");
-            rb.setUserData(i + 1);            // 1..4
+            rb.setUserData(i + 1);
             rb.setToggleGroup(group);
             optionsBox.getChildren().add(rb);
         }
@@ -239,33 +272,142 @@ public class QuizController {
     }
 
     private void onNext() {
+        System.out.println("[onNext] click; currentIndex=" + currentIndex + " / " + (mcqQuestions == null ? -1 : mcqQuestions.size()));
+
+        if (mcqQuestions == null || mcqQuestions.isEmpty()) {
+            System.out.println("[onNext] No questions loaded.");
+            return;
+        }
+
         QuizDao.McqQuestion q = mcqQuestions.get(currentIndex);
-        ToggleGroup group = ((RadioButton) optionsBox.getChildren().get(0)).getToggleGroup();
-        Toggle sel = group.getSelectedToggle();
-        if (sel == null) return;
-        int userOption = (int) sel.getUserData();
+
+        RadioButton selectedBtn = null;
+        for (var node : optionsBox.getChildren()) {
+            if (node instanceof RadioButton rb && rb.isSelected()) {
+                selectedBtn = rb;
+                break;
+            }
+        }
+        if (selectedBtn == null) {
+            System.out.println("[onNext] No option selected.");
+            if (outputArea != null) outputArea.appendText("\nPlease select an option.");
+            return;
+        }
+
+        int userOption = (int) selectedBtn.getUserData();
         selectedByQuestionId.put(q.questionID, userOption);
 
         try {
-            QuizDao.upsertAnswer(scoreId, q.questionID, userOption, q.correctOption);
+            System.out.println("[onNext] savePickedAnswer(scoreId=" + scoreId + ", qId=" + q.questionID + ", opt=" + userOption + ")");
+            QuizDao.savePickedAnswer(scoreId, q.questionID, userOption);
         } catch (Exception ex) {
+            System.out.println("[onNext] ERROR saving answer");
+            ex.printStackTrace();
             if (outputArea != null) outputArea.appendText("\n[WARN] Saving answer failed: " + ex.getMessage());
         }
 
-        if (currentIndex < mcqQuestions.size() - 1) {
+        boolean isLast = (currentIndex >= mcqQuestions.size() - 1);
+        if (!isLast) {
             currentIndex++;
             renderQuestion();
-        } else {
-            try {
-                int percent = QuizDao.finishAttempt(scoreId, true);
-                if (outputArea != null) outputArea.setText("Quiz completed! Score: " + percent + "%");
-                loadHistory();
-                showHistoryCard();
-            } catch (Exception ex) {
-                if (outputArea != null) outputArea.setText("Failed to finalize score: " + ex.getMessage());
-            }
+            return;
+        }
+        try {
+            int percent = QuizDao.finishAttempt(scoreId, true);
+            var rows = QuizDao.getAttemptResults(scoreId);
+
+            showResults(rows, percent);
+
+        } catch (Exception ex) {
+            if (outputArea != null) outputArea.setText("Failed to finalize or load results: " + ex.getMessage());
+            loadHistory();
+            showHistoryCard();
         }
     }
+
+    private void showResults(List<QuizDao.ResultRow> rows, int percent) {
+        showQuizCard();
+
+        questionCounterLabel.setText("Quiz Complete!");
+        percentCompleteLabel.setText(percent + "%");
+        progressBar.setProgress(1.0);
+        questionLabel.setText("Here's your performance summary and question breakdown");
+
+        if (resultsScroll != null) {
+            resultsScroll.setFitToWidth(true);
+            resultsScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+            resultsScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+            resultsScroll.setFocusTraversable(false);
+        }
+
+        optionsBox.getChildren().clear();
+        optionsBox.setFillWidth(true);
+
+        long correct = rows.stream().filter(r -> r.isCorrect).count();
+        long incorrect = rows.size() - correct;
+
+        Label correctLbl = new Label("Correct Answers\n" + correct);
+        correctLbl.getStyleClass().addAll("summary-badge", "summary-correct");
+        Label incorrectLbl = new Label("Incorrect Answers\n" + incorrect);
+        incorrectLbl.getStyleClass().addAll("summary-badge", "summary-incorrect");
+
+        var summary = new javafx.scene.layout.HBox(16, correctLbl, incorrectLbl);
+        summary.getStyleClass().add("summary-row");
+        optionsBox.getChildren().add(summary);
+
+        for (int i = 0; i < rows.size(); i++) {
+            var r = rows.get(i);
+            int chosenIdx  = Math.max(1, Math.min(4, r.chosen)) - 1;
+            int correctIdx = Math.max(1, Math.min(4, r.correct)) - 1;
+
+            Label qTitle = new Label("Question " + (i + 1));
+            qTitle.getStyleClass().add("q-title");
+
+            Label qText = new Label(r.text);
+            qText.getStyleClass().add("q-text");
+            qText.setWrapText(true);
+            qText.setMaxWidth(Double.MAX_VALUE);
+
+            var opts = new javafx.scene.layout.VBox(8);
+            for (int k = 0; k < 4; k++) {
+                Label opt = new Label(r.options[k]);
+                opt.setWrapText(true);
+                opt.setMaxWidth(Double.MAX_VALUE);
+                opt.getStyleClass().add("opt");
+
+                if (k == correctIdx)                   opt.getStyleClass().add("opt-correct");
+                if (k == chosenIdx)                    opt.getStyleClass().add("opt-chosen");
+                if (k == chosenIdx && !r.isCorrect)    opt.getStyleClass().add("opt-wrong");
+
+                opts.getChildren().add(opt);
+            }
+
+            var card = new javafx.scene.layout.VBox(8, qTitle, qText, opts);
+            card.getStyleClass().addAll("q-card", r.isCorrect ? "q-card-correct" : "q-card-incorrect");
+            card.setMaxWidth(Double.MAX_VALUE);
+
+            optionsBox.getChildren().add(card);
+        }
+
+        backButton.setDisable(false);
+        backButton.setText("History");
+        backButton.setOnAction(e -> { loadHistory(); showHistoryCard(); });
+
+        nextButton.setDisable(false);
+        nextButton.setText("Take New Quiz");
+        nextButton.setOnAction(e -> showUploadCard());  // this will reset state (see section B)
+    }
+
+    private void restoreQuizNavHandlers() {
+        backButton.setText("Back");
+        backButton.setDisable(true);
+        backButton.setOnAction(e -> { if (currentIndex > 0) { currentIndex--; renderQuestion(); }});
+
+        nextButton.setText("Next");
+        nextButton.setDisable(true);
+        nextButton.setOnAction(e -> onNext());
+    }
+
 
     private void loadHistory() {
         try {
@@ -329,6 +471,7 @@ public class QuizController {
                     selectedByQuestionId.clear();
                     currentIndex = 0;
                     showQuizCard();
+                    restoreQuizNavHandlers();
                     renderQuestion();
                 });
             } catch (Exception ex) {
@@ -338,7 +481,5 @@ public class QuizController {
                 });
             }
         }).start();
-
-
     }
 }

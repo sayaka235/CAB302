@@ -49,7 +49,11 @@
 
                 <Label fx:id="questionLabel" wrapText="true" styleClass="questionText"/>
 
-                <VBox fx:id="optionsBox" spacing="10"/>
+                <ScrollPane fx:id="resultsScroll" fitToWidth="true" vbarPolicy="AS_NEEDED" hbarPolicy="NEVER">
+                    <content>
+                        <VBox fx:id="optionsBox" spacing="12" />
+                    </content>
+                </ScrollPane>
 
                 <HBox spacing="8">
                     <Button fx:id="backButton" text="Back" styleClass="ghost-btn" disable="true"/>

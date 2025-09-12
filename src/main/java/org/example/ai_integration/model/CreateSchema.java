@@ -136,6 +136,10 @@ public final class CreateSchema {
                 );
             """);
             st.executeUpdate("""
+                CREATE UNIQUE INDEX IF NOT EXISTS idx_QAA_score_qid
+                ON QuizAttemptAnswer(scoreID, questionID);
+            """);
+            st.executeUpdate("""
                 INSERT OR IGNORE INTO Users(ID, email, firstName, lastName, dob, passwordHash)
                 VALUES(1, 'demo@example.com', 'Demo', 'User', '2000-01-01', 'dev-hash')
             """);

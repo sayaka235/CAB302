@@ -1,15 +1,18 @@
 package org.example.ai_integration.model;
 
-import com.google.gson.stream.JsonReader;
 import okhttp3.*;
 import com.google.gson.*;
 import java.io.IOException;
-import java.io.StringReader;
 
 public class QuizAPI
 {
-    private static final String API_KEY = "AIzaSyAMCztiPTzwmxVrlY7Q3uwwYBVtBaw2aCM";
-    private static final String ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + API_KEY;
+    private static String getGeminiApiKey() {
+        String key = System.getenv("GEMINI_API_KEY");
+        if (key == null || key.isBlank()) {
+            throw new IllegalStateException("Missing GEMINI_API_KEY (set it as an environment variable).");
+        }
+        return key.trim();
+    }
     private static final OkHttpClient client = new OkHttpClient();
     private static final Gson gson = new Gson();
 
@@ -20,89 +23,34 @@ public class QuizAPI
         public int correct_index;
     }
 
-    public static java.util.List<McqItem> parseMcqArray(String rawJson)
+    public static java.util.List<McqItem> parseMcqArray(String raw)
     {
-        JsonObject root = gson.fromJson(rawJson, JsonObject.class);
+        try {
+            final com.google.gson.JsonElement root = com.google.gson.JsonParser.parseString(raw);
 
-        String text = root.getAsJsonArray("candidates")
-                .get(0).getAsJsonObject()
-                .getAsJsonObject("content")
-                .getAsJsonArray("parts")
-                .get(0).getAsJsonObject()
-                .get("text").getAsString();
+            if (root.isJsonObject() && root.getAsJsonObject().has("candidates")) {
+                String text = extractTextFromGemini(root.getAsJsonObject());
+                String jsonPayload = extractJsonArrayString(text);
+                return parseArray(jsonPayload);
+            }
 
-        text = text.replace("```json", "").replace("```", "").trim();
+            if (root.isJsonPrimitive()) {
+                String text = root.getAsJsonPrimitive().getAsString();
+                String jsonPayload = extractJsonArrayString(text);
+                return parseArray(jsonPayload);
+            }
 
-        JsonElement payload = JsonParser.parseString(text);
-        JsonArray items;
-        if (payload.isJsonArray())
-        {
-            items = payload.getAsJsonArray();
+            if (root.isJsonArray()) {
+                return parseArray(root.toString());
+            }
+
+            String jsonPayload = extractJsonArrayString(raw);
+            return parseArray(jsonPayload);
+
+        } catch (Exception e) {
+            String preview = raw == null ? "null" : raw.substring(0, Math.min(400, raw.length())).replace("\n","\\n");
+            throw new RuntimeException("Could not parse MCQ array. Preview of payload: " + preview, e);
         }
-        else if (payload.isJsonObject() && payload.getAsJsonObject().has("questions"))
-        {
-            items = payload.getAsJsonObject().getAsJsonArray("questions");
-        }
-        else
-        {
-            throw new IllegalStateException("Unexpected quiz JSON: " + text);
-        }
-
-        java.util.List<McqItem> out = new java.util.ArrayList<>();
-        for (JsonElement e : items)
-        {
-            JsonObject o = e.getAsJsonObject();
-            McqItem m = new McqItem();
-            m.question = o.get("question").getAsString();
-
-            if (o.has("options") && o.get("options").isJsonArray())
-            {
-                JsonArray arr = o.getAsJsonArray("options");
-                if (arr.size() != 4) throw new IllegalStateException("options must have 4 items");
-                m.options = new java.util.ArrayList<>(4);
-                for (int i = 0; i < 4; i++) m.options.add(arr.get(i).getAsString());
-            }
-            else if (o.has("options") && o.get("options").isJsonObject()) {
-                JsonObject opts = o.getAsJsonObject("options");
-                String[] order = {"A","B","C","D"};
-                m.options = new java.util.ArrayList<>(4);
-                for (String k : order)
-                {
-                    if (!opts.has(k)) throw new IllegalStateException("options missing key: " + k);
-                    m.options.add(opts.get(k).getAsString());
-                }
-            }
-            else
-            {
-                throw new IllegalStateException("Missing options");
-            }
-
-            if (o.has("correct_index"))
-            {
-                m.correct_index = o.get("correct_index").getAsInt();
-            }
-            else if (o.has("answer"))
-            {
-                switch (o.get("answer").getAsString().trim().toUpperCase())
-                {
-                    case "A": m.correct_index = 1; break;
-                    case "B": m.correct_index = 2; break;
-                    case "C": m.correct_index = 3; break;
-                    case "D": m.correct_index = 4; break;
-                    default: throw new IllegalStateException("Unknown answer letter");
-                }
-            }
-            else
-            {
-                throw new IllegalStateException("Missing correct_index/answer");
-            }
-
-            if (m.correct_index < 1 || m.correct_index > 4)
-                throw new IllegalStateException("correct_index out of range");
-
-            out.add(m);
-        }
-        return out;
     }
 
 
@@ -121,14 +69,13 @@ public class QuizAPI
 
         JsonObject req = new JsonObject();
         req.add("contents", contentsArray);
-        JsonObject gen = new JsonObject();
-        gen.addProperty("responseMimeType", "application/json");
-        req.add("generationConfig", gen);
 
         RequestBody body = RequestBody.create(gson.toJson(req), MediaType.parse("application/json"));
 
         Request request = new Request.Builder()
-                .url(ENDPOINT)
+                .url("https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent")
+                .addHeader("x-goog-api-key", getGeminiApiKey())
+                .addHeader("Content-Type", "application/json")
                 .post(body)
                 .build();
 
@@ -144,6 +91,55 @@ public class QuizAPI
             e.printStackTrace();
             return "Error: " + e.getMessage();
         }
+    }
+
+    private static String extractTextFromGemini(com.google.gson.JsonObject obj) {
+        var candidates = obj.getAsJsonArray("candidates");
+        if (candidates == null || candidates.size() == 0)
+            throw new IllegalArgumentException("No candidates in Gemini response.");
+
+        var c0 = candidates.get(0).getAsJsonObject();
+
+        var content = c0.getAsJsonObject("content");
+        if (content == null) throw new IllegalArgumentException("Missing 'content' in candidate.");
+
+        var parts = content.getAsJsonArray("parts");
+        if (parts == null || parts.size() == 0)
+            throw new IllegalArgumentException("No 'parts' in content.");
+
+        var p0 = parts.get(0).getAsJsonObject();
+        if (!p0.has("text"))
+            throw new IllegalArgumentException("First part has no 'text' field.");
+
+        return p0.get("text").getAsString();
+    }
+
+    private static String extractJsonArrayString(String text) {
+        if (text == null) throw new IllegalArgumentException("Empty text from model.");
+
+        String t = text.trim();
+
+        int fenceStart = t.indexOf("```");
+        if (fenceStart >= 0) {
+            int firstNL = t.indexOf('\n', fenceStart);
+            int fenceEnd = t.indexOf("```", Math.max(fenceStart + 3, firstNL >= 0 ? firstNL + 1 : fenceStart + 3));
+            if (firstNL >= 0 && fenceEnd > firstNL) {
+                t = t.substring(firstNL + 1, fenceEnd).trim();
+            }
+        }
+
+        int arrStart = t.indexOf('[');
+        int arrEnd   = t.lastIndexOf(']');
+        if (arrStart >= 0 && arrEnd > arrStart) {
+            t = t.substring(arrStart, arrEnd + 1).trim();
+        }
+
+        return t;
+    }
+
+    private static java.util.List<QuizAPI.McqItem> parseArray(String jsonArray) {
+        java.lang.reflect.Type listType = new com.google.gson.reflect.TypeToken<java.util.List<QuizAPI.McqItem>>(){}.getType();
+        return gson.fromJson(jsonArray, listType);
     }
 
     private static String buildPrompt(String content, String quizType, int numQuestions)
@@ -173,84 +169,6 @@ public class QuizAPI
 
             default:
                 return "Please select a valid quiz type.";
-        }
-    }
-
-
-    private static String parseResponse(String json, String quizType)
-    {
-        JsonObject root = gson.fromJson(json, JsonObject.class);
-        try
-        {
-            String textBlock = root.getAsJsonArray("candidates")
-                    .get(0).getAsJsonObject()
-                    .getAsJsonObject("content")
-                    .getAsJsonArray("parts")
-                    .get(0).getAsJsonObject()
-                    .get("text").getAsString();
-
-            textBlock = textBlock.replace("```json", "").replace("```", "").trim();
-            JsonReader reader = new JsonReader(new StringReader(textBlock));
-            reader.setLenient(true);
-            JsonElement parsedElement = gson.fromJson(textBlock, JsonElement.class);
-            StringBuilder formatted = new StringBuilder();
-
-            if (parsedElement.isJsonArray())
-            {
-                JsonArray questionsArray = parsedElement.getAsJsonArray();
-                int i = 1;
-                for (JsonElement qElem : questionsArray)
-                {
-                    JsonObject qObj = qElem.getAsJsonObject();
-                    formatted.append(i++).append(". ")
-                            .append(qObj.get("question").getAsString()).append("\n");
-                    formatted.append("Answer: ")
-                            .append(qObj.get("answer").getAsString()).append("\n\n");
-                }
-            }
-            else if (parsedElement.isJsonObject())
-            {
-                JsonObject parsed = parsedElement.getAsJsonObject();
-                if (parsed.has("questions"))
-                {
-                    int i = 1;
-                    for (JsonElement qElem : parsed.getAsJsonArray("questions"))
-                    {
-                        JsonObject qObj = qElem.getAsJsonObject();
-                        formatted.append(i++).append(". ")
-                                .append(qObj.get("question").getAsString()).append("\n");
-
-                        if (quizType.equals("Multiple Choice") && qObj.has("options"))
-                        {
-                            char optionLabel = 'A';
-                            for (JsonElement opt : qObj.getAsJsonArray("options"))
-                            {
-                                formatted.append("   ").append(optionLabel++).append(") ")
-                                        .append(opt.getAsString()).append("\n");
-                            }
-                        }
-
-                        formatted.append("Answer: ")
-                                .append(qObj.get("answer").getAsString()).append("\n\n");
-                    }
-                }
-                else
-                {
-                    formatted.append("Unexpected object structure:\n").append(textBlock);
-                }
-            }
-            else
-            {
-                formatted.append("Unrecognized response format:\n").append(textBlock);
-            }
-
-            return formatted.toString();
-
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            return "Failed to parse response:\n" + json;
         }
     }
 }

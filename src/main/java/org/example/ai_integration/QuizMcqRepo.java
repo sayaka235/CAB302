@@ -7,7 +7,6 @@ import java.sql.*;
 import java.util.List;
 
 public final class QuizMcqRepo {
-    private QuizMcqRepo() {}
     public static long createQuiz(String quizType, long userId,
                                   List<QuizAPI.McqItem> items,
                                   String title,
