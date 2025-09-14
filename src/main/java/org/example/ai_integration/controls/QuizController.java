@@ -20,11 +20,8 @@ import javafx.scene.control.RadioButton;
 import org.example.ai_integration.Navigator;
 import org.example.ai_integration.QuizDao;
 import org.example.ai_integration.QuizMcqRepo;
-import org.example.ai_integration.model.CreateSchema;
-import org.example.ai_integration.model.FileUtil;
-import org.example.ai_integration.model.QuizAPI;
+import org.example.ai_integration.model.*;
 import org.example.ai_integration.ChartModel;
-import org.example.ai_integration.model.QuizManager;
 
 import java.util.*;
 
@@ -64,7 +61,7 @@ public class QuizController {
         try {
             CreateSchema.initAll();} catch (Exception ignored) {}
 
-        CURRENT_USER_ID = Long.parseLong(user.getUserID());
+        CURRENT_USER_ID = Long.parseLong(UserManager.getInstance().getLoggedInUser().getUserID());
 
         try { CreateSchema.initAll(); } catch (Exception ignored) {}
         if(QuizManager.getInstance().getQuiz() == null){
