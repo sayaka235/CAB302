@@ -65,4 +65,7 @@ public class NotesLibraryController {
             alert(Alert.AlertType.ERROR, "Navigation error", e.getMessage());
         }
     }
+
+    @FXML private void readNotes(ActionEvent actionEvent) {
+    }
 }
