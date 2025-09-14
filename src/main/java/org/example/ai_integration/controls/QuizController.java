@@ -9,6 +9,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,8 +20,11 @@ import javafx.scene.control.RadioButton;
 import org.example.ai_integration.Navigator;
 import org.example.ai_integration.QuizDao;
 import org.example.ai_integration.QuizMcqRepo;
-/*import org.example.ai_integration.model.CreateSchema;*/
-import org.example.ai_integration.model.*;
+import org.example.ai_integration.model.CreateSchema;
+import org.example.ai_integration.model.FileUtil;
+import org.example.ai_integration.model.QuizAPI;
+import org.example.ai_integration.ChartModel;
+import org.example.ai_integration.model.QuizManager;
 
 import java.util.*;
 
@@ -55,20 +61,8 @@ public class QuizController {
 
     @FXML
     private void initialize() {
-
-        var user = UserManager.getInstance().getLoggedInUser();
-        if (user == null) {
-            Platform.runLater(() -> {
-                try {
-                    Navigator.toLogin();
-                }
-                catch(Exception e) {
-                    e.printStackTrace();
-                    alert(Alert.AlertType.ERROR, "Not logged in", "Please log in before taking a quiz.");
-                }
-            });
-            return;
-        }
+        try {
+            CreateSchema.initAll();} catch (Exception ignored) {}
 
         CURRENT_USER_ID = Long.parseLong(user.getUserID());
 
@@ -97,7 +91,6 @@ public class QuizController {
             e.consume();
         });
 
-        // File chooser
         uploadButton.setOnAction(e -> {
             FileChooser fc = new FileChooser();
             var pdf = new FileChooser.ExtensionFilter("PDF Files (*.pdf)", "*.pdf");
@@ -279,13 +272,6 @@ public class QuizController {
     }
 
     private void onNext() {
-        System.out.println("[onNext] click; currentIndex=" + currentIndex + " / " + (mcqQuestions == null ? -1 : mcqQuestions.size()));
-
-        if (mcqQuestions == null || mcqQuestions.isEmpty()) {
-            System.out.println("[onNext] No questions loaded.");
-            return;
-        }
-
         QuizDao.McqQuestion q = mcqQuestions.get(currentIndex);
 
         RadioButton selectedBtn = null;
