@@ -36,5 +36,6 @@ public class User {
     public LocalDate getDob(){return dob;}
     public String getPassword(){return password;}
     public String getName(){return firstname+ " " +lastname;}
+    public String getFirstname(){return firstname;}
     public String getUserID(){return userID;}
 }
