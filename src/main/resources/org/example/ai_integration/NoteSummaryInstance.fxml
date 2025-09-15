@@ -10,6 +10,6 @@
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.example.ai_integration.controls.NoteSummaryInstanceController"
             prefHeight="400.0" prefWidth="600.0">
-    <Label fx:id = "notes"/>
+    <Label fx:id = "notes" text = "initial Text"/>
 
 </AnchorPane>

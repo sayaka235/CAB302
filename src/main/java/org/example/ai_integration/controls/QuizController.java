@@ -161,8 +161,8 @@ public class QuizController {
             uploadedContent = FileUtil.readFileContent(f);
             uploadHint.setText("Ready! Click Start Quiz.");
             startQuizButton.setDisable(false);
-            /*String jsonNotes = NotesAPI.generateSummary(uploadedContent);
-            summaryParsed = NotesAPI.parseSummary(jsonNotes);*/
+            String jsonNotes = NotesAPI.generateSummary(uploadedContent);
+            summaryParsed = NotesAPI.parseSummary(jsonNotes);
 
         } catch (IOException ex) {
             uploadHint.setText("Failed to read file: " + ex.getMessage());
@@ -213,7 +213,7 @@ public class QuizController {
                 List<QuizAPI.McqItem> items = QuizAPI.parseMcqArray(json);
 
 
-                /*long notesID = NoteSummaryRepo.createNotes(summaryParsed, title, CURRENT_USER_ID);*/
+                long notesID = NoteSummaryRepo.createNotes(summaryParsed, title, CURRENT_USER_ID);
                 quizId = QuizMcqRepo.createQuiz("Multiple Choice", CURRENT_USER_ID, items, title, imagePath);
                 scoreId = QuizDao.startAttempt(quizId, CURRENT_USER_ID);
                 mcqQuestions = QuizDao.loadQuestions(quizId);

@@ -3,6 +3,7 @@ package org.example.ai_integration.model;
 import okhttp3.*;
 import com.google.gson.*;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 public class QuizAPI
 {
@@ -56,6 +57,9 @@ public class QuizAPI
 
     public static String generateQuiz(String content, String quizType, int numQuestions)
     {
+
+
+
         String prompt = buildPrompt(content, quizType, numQuestions);
 
         JsonArray contentsArray = new JsonArray();
@@ -71,6 +75,10 @@ public class QuizAPI
         req.add("contents", contentsArray);
 
         RequestBody body = RequestBody.create(gson.toJson(req), MediaType.parse("application/json"));
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .readTimeout(60, TimeUnit.SECONDS) // Set read timeout to 30 seconds
+                .build();
 
         Request request = new Request.Builder()
                 .url("https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent")

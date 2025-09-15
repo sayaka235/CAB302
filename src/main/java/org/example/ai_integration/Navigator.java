@@ -20,7 +20,7 @@ public final class Navigator {
     private static final String QUIZLIBRARY_FXML = "/org/example/ai_integration/quizLibrary.fxml";
     private static final String NOTESLIBRARY_FXML = "/org/example/ai_integration/notesLibrary.fxml";
     private static final String USERSTATS_FXML = "/org/example/ai_integration/UserStatsScene.fxml";
-    private static final String NOTESUMMARYINSTANCE_FXML = "org/example/ai_integration/NoteSummaryInstance.fxml";
+    private static final String NOTESUMMARYINSTANCE_FXML = "/org/example/ai_integration/NoteSummaryInstance.fxml";
     private User loggedinUser;
     private static Scene scene;
     private static Stage stage; // optional: to update title

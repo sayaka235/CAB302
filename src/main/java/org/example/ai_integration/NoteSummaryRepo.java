@@ -9,11 +9,11 @@ public class NoteSummaryRepo {
         try (Connection c = Database.getConnection()) {
             // Insert quiz metadata (with title & imagePath)
             try (PreparedStatement ps = c.prepareStatement(
-                    "INSERT INTO noteSummary (notes, userID) VALUES (?,?)",
+                    "INSERT INTO noteSummary (notes, title, userID) VALUES (?,?,?)",
                     Statement.RETURN_GENERATED_KEYS)) {
                 ps.setString(1, notes);
                 ps.setString(2, title);
-                ps.setLong(2, userId);
+                ps.setLong(3, userId);
                 ps.executeUpdate();
                 try (ResultSet rs = ps.getGeneratedKeys()) {
                     if (!rs.next()) throw new SQLException("Failed to create notes");
