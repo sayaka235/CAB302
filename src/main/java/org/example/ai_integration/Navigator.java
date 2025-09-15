@@ -4,6 +4,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.example.ai_integration.model.NoteSummaryManager;
 import org.example.ai_integration.model.User;
 
 import java.io.IOException;
@@ -19,6 +20,7 @@ public final class Navigator {
     private static final String QUIZLIBRARY_FXML = "/org/example/ai_integration/quizLibrary.fxml";
     private static final String NOTESLIBRARY_FXML = "/org/example/ai_integration/notesLibrary.fxml";
     private static final String USERSTATS_FXML = "/org/example/ai_integration/UserStatsScene.fxml";
+    private static final String NOTESUMMARYINSTANCE_FXML = "org/example/ai_integration/NoteSummaryInstance.fxml";
     private User loggedinUser;
     private static Scene scene;
     private static Stage stage; // optional: to update title
@@ -62,6 +64,11 @@ public final class Navigator {
         ensureInitialized();
         scene.setRoot(load(NOTESLIBRARY_FXML));
         if(stage != null) stage.setTitle("Notes Library");
+    }
+    public static void toNoteSummary() throws IOException{
+        ensureInitialized();
+        scene.setRoot(load(NOTESUMMARYINSTANCE_FXML));
+        if(stage != null) stage.setTitle("Note Summary");
     }
     public static void toUserStats() throws IOException{
         ensureInitialized();

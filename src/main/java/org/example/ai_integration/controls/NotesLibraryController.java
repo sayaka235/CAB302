@@ -15,14 +15,14 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 
 public class NotesLibraryController {
-    private ArrayList<Notes> notesList = new ArrayList<>();
+    private ArrayList<NoteSummary> notesList = new ArrayList<>();
 
     @FXML private ToggleGroup DynamicToggleGroup;
     @FXML private VBox radioButtonsContainer;
 
     @FXML
     private void initialize() {
-        String sql = "SELECT noteID, title, notes, extNotesURL FROM Notes WHERE userID = ?";
+        String sql = "SELECT noteID, title, notes FROM noteSummary WHERE userID = ?";
         try (Connection c = Database.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
 
@@ -33,9 +33,9 @@ public class NotesLibraryController {
                     long noteID = rs.getLong("noteID");
                     String title = rs.getString("title");
                     String notesContent = rs.getString("notes");
-                    String extNotesURL = rs.getString("extNotesURL");
+                    /*String extNotesURL = rs.getString("extNotesURL");*/
 
-                    Notes note = new Notes(noteID, title, notesContent, extNotesURL);
+                    NoteSummary note = new NoteSummary(noteID, title, notesContent);
                     notesList.add(note);
 
                     RadioButton radioButton = new RadioButton(title);
@@ -67,5 +67,23 @@ public class NotesLibraryController {
     }
 
     @FXML private void readNotes(ActionEvent actionEvent) {
+        try {
+            RadioButton selectedRadioButton = (RadioButton) DynamicToggleGroup.getSelectedToggle();
+            if (selectedRadioButton != null) {
+                String selectedOption = selectedRadioButton.getText();
+                NoteSummary selectedNotes = null;
+                for (NoteSummary note : notesList) {
+                    if (note.getTitle().equals(selectedOption)) {
+                        selectedNotes = note;
+                        break;
+                    }
+                }
+                NoteSummaryManager.getInstance().setNote(selectedNotes);
+                Navigator.toNoteSummary();
+            }
+        }
+        catch(Exception e){
+            alert(Alert.AlertType.ERROR, "No quiz selected", e.getMessage());
+        }
     }
 }

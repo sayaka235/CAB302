@@ -9,20 +9,15 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 
 import java.io.File;
 import java.io.IOException;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.RadioButton;
-import org.example.ai_integration.Navigator;
-import org.example.ai_integration.QuizDao;
-import org.example.ai_integration.QuizMcqRepo;
+import org.example.ai_integration.*;
 import org.example.ai_integration.model.*;
-import org.example.ai_integration.ChartModel;
 
+import java.sql.SQLException;
 import java.util.*;
 
 public class QuizController {
@@ -51,6 +46,7 @@ public class QuizController {
     private long quizId;
     private long scoreId;
     private int currentIndex = 0;
+    private String summaryParsed;
     private List<QuizDao.McqQuestion> mcqQuestions = new ArrayList<>();
     private final Map<Long, Integer> selectedByQuestionId = new HashMap<>();
 
@@ -165,6 +161,9 @@ public class QuizController {
             uploadedContent = FileUtil.readFileContent(f);
             uploadHint.setText("Ready! Click Start Quiz.");
             startQuizButton.setDisable(false);
+            /*String jsonNotes = NotesAPI.generateSummary(uploadedContent);
+            summaryParsed = NotesAPI.parseSummary(jsonNotes);*/
+
         } catch (IOException ex) {
             uploadHint.setText("Failed to read file: " + ex.getMessage());
             startQuizButton.setDisable(true);
@@ -213,6 +212,8 @@ public class QuizController {
                 String json = QuizAPI.generateQuiz(uploadedContent, "Multiple Choice", numQuestions);
                 List<QuizAPI.McqItem> items = QuizAPI.parseMcqArray(json);
 
+
+                /*long notesID = NoteSummaryRepo.createNotes(summaryParsed, title, CURRENT_USER_ID);*/
                 quizId = QuizMcqRepo.createQuiz("Multiple Choice", CURRENT_USER_ID, items, title, imagePath);
                 scoreId = QuizDao.startAttempt(quizId, CURRENT_USER_ID);
                 mcqQuestions = QuizDao.loadQuestions(quizId);
