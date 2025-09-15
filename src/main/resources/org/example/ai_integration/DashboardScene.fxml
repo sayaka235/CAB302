@@ -30,6 +30,7 @@
                 <Button onAction="#fileUpload" text="Upload new file" style="-fx-background-color: #054fb9; -fx-text-fill: white; -fx-background-radius: 5; -fx-font-size: 15;"  prefWidth="180" prefHeight="30"/>
                 <Button onAction="#quizLibrary" text="Go to quiz library" style="-fx-background-color: #054fb9; -fx-text-fill: white; -fx-background-radius: 5;-fx-font-size: 15;" prefWidth="180" prefHeight="30"/>
                 <Button onAction="#notesLibrary" text="Go to notes library" style="-fx-background-color: #054fb9; -fx-text-fill: white; -fx-background-radius: 5;-fx-font-size: 15;" prefWidth="180" prefHeight="30"/>
+                <Button onAction="#userStats" text="Go to your statistics" style="-fx-background-color: #054fb9; -fx-text-fill: white; -fx-background-radius: 5;-fx-font-size: 15;" prefWidth="180" prefHeight="30"/>
                 <ImageView fx:id="Stars" fitWidth="580" fitHeight="260" preserveRatio="true"/>
             </VBox>
         </VBox>

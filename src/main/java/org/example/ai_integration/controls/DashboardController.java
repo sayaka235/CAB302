@@ -64,4 +64,12 @@ public class DashboardController {
         a.setTitle(title); a.setHeaderText(null); a.setContentText(msg);
         a.showAndWait();
     }
+
+    @FXML private void userStats(ActionEvent actionEvent) {
+        try {
+            Navigator.toUserStats();
+        } catch (Exception e) {
+            e.printStackTrace();alert(Alert.AlertType.ERROR, "Navigation error", e.getMessage());
+        }
+    }
 }
