@@ -11,6 +11,9 @@
     <center>
         <StackPane fx:id="rootStack" BorderPane.alignment="CENTER">
             <VBox fx:id="uploadCard" spacing="14" alignment="CENTER" maxWidth="620" styleClass="card">
+                <VBox alignment = "TOP_LEFT">
+                    <Button onAction="#goToDashBoard" text="Home" style="-fx-background-color: #054fb9; -fx-text-fill: white; -fx-background-radius: 5;"/>
+                </VBox>
                 <Label text="AI Study Tool - Quiz Section" styleClass="title"/>
                 <Label text="Upload your study materials to generate a personalized quiz" styleClass="muted"/>
 

@@ -1,6 +1,7 @@
 package org.example.ai_integration.controls;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -151,6 +152,16 @@ public class QuizController {
         return (Stage) rootStack.getScene().getWindow();
     }
 
+    @FXML
+    private void goToDashBoard(ActionEvent actionEvent) {
+        try {
+            Navigator.toDashboard();
+        } catch (Exception e) {
+            e.printStackTrace();
+            alert(Alert.AlertType.ERROR, "Navigation error", e.getMessage());
+        }
+    }
+
     private void goToQuizLibrary(){
             try {
                 Navigator.toQuizLibrary();
@@ -171,6 +182,7 @@ public class QuizController {
             startQuizButton.setDisable(true);
         }
     }
+
     private void startQuizFromLibrary(){
         new Thread(() -> {
             try {
