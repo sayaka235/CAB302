@@ -1,14 +1,14 @@
 package org.example.ai_integration.model;
 
-//Stores the logged-in user statically so that it can be accessed by each scene
+import java.util.ArrayList;
+import java.util.List;
+
 public class QuizManager {
     private static QuizManager instance;
     private Quiz currentQuiz = null;
+    private final List<Quiz> quizList = new ArrayList<>();
 
-    // Private constructor to enforce Singleton pattern
-    private QuizManager() {
-        // Initialize if needed, or leave empty
-    }
+    private QuizManager() {}
 
     public static QuizManager getInstance() {
         if (instance == null) {
@@ -17,6 +17,7 @@ public class QuizManager {
         return instance;
     }
 
+    // Current quiz (selected)
     public void setQuiz(Quiz quiz) {
         this.currentQuiz = quiz;
     }
@@ -25,7 +26,21 @@ public class QuizManager {
         return currentQuiz;
     }
 
-    public void clearQuiz(){this.currentQuiz = null;}
+    public boolean isQuizSelected() {
+        return this.currentQuiz != null;
+    }
 
-    public boolean isQuizSelected(){return this.currentQuiz!=null;}
+    public void clearQuiz() {
+        this.currentQuiz = null;
+        quizList.clear();
+    }
+
+    // Multiple quizzes
+    public void addQuiz(Quiz quiz) {
+        quizList.add(quiz);
+    }
+
+    public List<Quiz> getQuizzes() {
+        return new ArrayList<>(quizList);
+    }
 }

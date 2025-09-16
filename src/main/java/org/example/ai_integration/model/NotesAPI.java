@@ -7,6 +7,7 @@ import okhttp3.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class NotesAPI {
     private static String getGeminiApiKey() {
@@ -18,10 +19,57 @@ public class NotesAPI {
     }
     private static final OkHttpClient client = new OkHttpClient();
     private static final Gson gson = new Gson();
-    public static String parseSummary(String raw){
-        String jsonPayload = extractJsonArrayString(raw);
-        return parseJson(jsonPayload);
+
+    public static String parseSummary(String raw)
+    {
+        try {
+            final com.google.gson.JsonElement root = com.google.gson.JsonParser.parseString(raw);
+
+            if (root.isJsonObject() && root.getAsJsonObject().has("candidates")) {
+                String text = extractTextFromGemini(root.getAsJsonObject());
+                String jsonPayload = extractJsonArrayString(text);
+                return parseJson(jsonPayload);
+            }
+
+            if (root.isJsonPrimitive()) {
+                String text = root.getAsJsonPrimitive().getAsString();
+                String jsonPayload = extractJsonArrayString(text);
+                return parseJson(jsonPayload);
+            }
+
+            if (root.isJsonArray()) {
+                return parseJson(root.toString());
+            }
+
+            String jsonPayload = extractJsonArrayString(raw);
+            return parseJson(jsonPayload);
+
+        } catch (Exception e) {
+            String preview = raw == null ? "null" : raw.substring(0, Math.min(400, raw.length())).replace("\n","\\n");
+            throw new RuntimeException("Could not parse MCQ array. Preview of payload: " + preview, e);
+        }
     }
+    private static String extractTextFromGemini(com.google.gson.JsonObject obj) {
+        var candidates = obj.getAsJsonArray("candidates");
+        if (candidates == null || candidates.size() == 0)
+            throw new IllegalArgumentException("No candidates in Gemini response.");
+
+        var c0 = candidates.get(0).getAsJsonObject();
+
+        var content = c0.getAsJsonObject("content");
+        if (content == null) throw new IllegalArgumentException("Missing 'content' in candidate.");
+
+        var parts = content.getAsJsonArray("parts");
+        if (parts == null || parts.size() == 0)
+            throw new IllegalArgumentException("No 'parts' in content.");
+
+        var p0 = parts.get(0).getAsJsonObject();
+        if (!p0.has("text"))
+            throw new IllegalArgumentException("First part has no 'text' field.");
+
+        return p0.get("text").getAsString();
+    }
+
     private static String extractJsonArrayString(String text) {
         if (text == null) throw new IllegalArgumentException("Empty text from model.");
 
@@ -45,7 +93,7 @@ public class NotesAPI {
         return t;
     }
     private static String buildPrompt(String content){
-        return  "Create a notes summary from the content below. Max tokens 500.\n\n" +
+        return  "Create a notes summary from the content below. Word limit 200.\n\n" +
                 "\"Output STRICTLY as raw JSON (no prose, no markdown fences):\\n\\n\""+
                 "{\n"+
                 "\"title\": \"string\",\n"+
@@ -67,6 +115,10 @@ public class NotesAPI {
         JsonObject req = new JsonObject();
         req.add("contents", contentsArray);
         RequestBody body = RequestBody.create(gson.toJson(req), MediaType.parse("application/json"));
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .readTimeout(80, TimeUnit.SECONDS) // Set read timeout to 30 seconds
+                .build();
 
         Request request = new Request.Builder()
                 .url("https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent")

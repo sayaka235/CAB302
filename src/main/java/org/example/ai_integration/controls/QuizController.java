@@ -20,6 +20,8 @@ import org.example.ai_integration.model.*;
 import java.sql.SQLException;
 import java.util.*;
 
+import static org.example.ai_integration.model.NotesAPI.parseSummary;
+
 public class QuizController {
 
     @FXML private StackPane rootStack;
@@ -162,7 +164,7 @@ public class QuizController {
             uploadHint.setText("Ready! Click Start Quiz.");
             startQuizButton.setDisable(false);
             String jsonNotes = NotesAPI.generateSummary(uploadedContent);
-            summaryParsed = NotesAPI.parseSummary(jsonNotes);
+            summaryParsed = parseSummary(jsonNotes);
 
         } catch (IOException ex) {
             uploadHint.setText("Failed to read file: " + ex.getMessage());

@@ -1,4 +1,4 @@
-package org.example.ai_integration;
+package org.example.ai_integration.controls;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -8,7 +8,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 
 import java.io.IOException;
-import java.util.Objects;
 
 public class ApplicationEntryController
 {
