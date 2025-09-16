@@ -59,6 +59,17 @@ public class DashboardController {
             e.printStackTrace();
         }
     }
+    @FXML private VBox sidebar;
+
+    @FXML
+    private void toggleSidebar() {
+        if (sidebar.getPrefWidth() > 50) {
+            sidebar.setPrefWidth(50); // collapse
+        } else {
+            sidebar.setPrefWidth(200); // expand
+        }
+    }
+
     private static void alert(Alert.AlertType t, String title, String msg) {
         Alert a = new Alert(t);
         a.setTitle(title); a.setHeaderText(null); a.setContentText(msg);
