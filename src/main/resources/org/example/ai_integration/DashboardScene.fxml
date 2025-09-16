@@ -22,8 +22,6 @@
                         style="-fx-background-color: transparent; -fx-text-fill: white;"/>
                 <Button text="Stats" onAction="#userStats"
                         style="-fx-background-color: transparent; -fx-text-fill: white;"/>
-                <Button text="Upload file" onAction="#fileUpload"
-                        style="-fx-background-color: transparent; -fx-text-fill: white;"/>
                 <Button text="Logout" onAction="#logOut"
                         style="-fx-background-color: transparent; -fx-text-fill: white;"/>
             </children>

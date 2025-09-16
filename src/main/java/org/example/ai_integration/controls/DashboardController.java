@@ -15,7 +15,6 @@ import org.example.ai_integration.model.Quiz;
 import org.example.ai_integration.model.QuizManager;
 import org.example.ai_integration.model.UserManager;
 
-import javax.swing.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
