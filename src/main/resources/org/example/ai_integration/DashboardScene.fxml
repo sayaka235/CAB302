@@ -1,38 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.effect.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
-
 <?import javafx.scene.image.ImageView?>
-<StackPane prefHeight="700.0" prefWidth="700.0" style="-fx-background-color: linear-gradient(to bottom, #b3c7f7, #244678);" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.ai_integration.controls.DashboardController">
-    <children>
-        <VBox alignment="TOP_CENTER" maxHeight="560" maxWidth="580" spacing="12" style="-fx-background-color: white; -fx-background-radius: 10;">
-            <padding>
-                <Insets bottom="16" left="16" right="16" top="16" />
-            </padding>
-            <effect>
-                <DropShadow blurType="ONE_PASS_BOX" color="rgba(0,0,0,0.2)" offsetX="4" offsetY="4" radius="8" />
-            </effect>
-            <HBox><Button onAction="#logOut" text="Log Out" style="-fx-background-color: #054fb9; -fx-text-fill: white; -fx-background-radius: 5;" /></HBox>
-            <VBox alignment = "CENTER" spacing = "20">
-                <padding>
-                    <Insets bottom="30" left="5" right="5" top="5" />
-                </padding>
-                <Label fx:id = "WelcomeLabel" text = "Welcome" textFill="BLACK">
-                    <font><Font name="Verdana" size="40" /></font>
-                </Label>
-                <Separator maxWidth="250" />
-            </VBox>
-            <VBox  alignment = "CENTER" spacing = "20">
-                <Button onAction="#fileUpload" text="Upload new file" style="-fx-background-color: #054fb9; -fx-text-fill: white; -fx-background-radius: 5; -fx-font-size: 15;"  prefWidth="180" prefHeight="30"/>
-                <Button onAction="#quizLibrary" text="Go to quiz library" style="-fx-background-color: #054fb9; -fx-text-fill: white; -fx-background-radius: 5;-fx-font-size: 15;" prefWidth="180" prefHeight="30"/>
-                <Button onAction="#notesLibrary" text="Go to notes library" style="-fx-background-color: #054fb9; -fx-text-fill: white; -fx-background-radius: 5;-fx-font-size: 15;" prefWidth="180" prefHeight="30"/>
-                <Button onAction="#userStats" text="Go to your statistics" style="-fx-background-color: #054fb9; -fx-text-fill: white; -fx-background-radius: 5;-fx-font-size: 15;" prefWidth="180" prefHeight="30"/>
-                <ImageView fx:id="Stars" fitWidth="580" fitHeight="260" preserveRatio="true"/>
-            </VBox>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/24.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.ai_integration.controls.DashboardController"
+            style="-fx-background-color: linear-gradient(to bottom, #b3c7f7, #244678);">
+
+    <!-- Sidebar -->
+    <left>
+        <VBox fx:id="sidebar" spacing="10" prefWidth="200"
+              style="-fx-background-color: #1e3a6e; -fx-padding: 15;">
+            <children>
+                <Button text="☰" onAction="#toggleSidebar"
+                        style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 16;"/>
+                <Separator/>
+                <Button text="Notes" onAction="#notesLibrary"
+                        style="-fx-background-color: transparent; -fx-text-fill: white;"/>
+                <Button text="Quiz Library" onAction="#quizLibrary"
+                        style="-fx-background-color: transparent; -fx-text-fill: white;"/>
+                <Button text="Stats" onAction="#userStats"
+                        style="-fx-background-color: transparent; -fx-text-fill: white;"/>
+                <Button text="Logout" onAction="#logOut"
+                        style="-fx-background-color: transparent; -fx-text-fill: white;"/>
+            </children>
         </VBox>
-    </children>
-</StackPane>
+    </left>
+
+    <!-- Main content -->
+    <center>
+        <VBox alignment="CENTER" spacing="20" style="-fx-padding: 20;">
+            <children>
+                <Label fx:id="WelcomeLabel" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                <ImageView fx:id="Stars" fitHeight="200" fitWidth="200" preserveRatio="true"/>
+            </children>
+        </VBox>
+    </center>
+</BorderPane>
