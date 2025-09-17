@@ -1,6 +1,10 @@
+import org.example.ai_integration.model.Signup;
 import org.example.ai_integration.model.SignupClass;
+import org.example.ai_integration.model.User;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -41,9 +45,11 @@ public class SignupTests {
 
     @Test
     public void testInvalidSignupNameWithNumbers() {
-        SignupClass s = new SignupClass("Alice123", "Graystone", "alice@example.com",
-                "123 Lane", new Date(95, Calendar.JANUARY, 1));
-        assertFalse(signupValid(s, "StrongPass1"));
+        Signup signup = new Signup();
+        User user = new User("email@gmail", "layla245", "ahern", LocalDate.of(1977,9,17), "password");
+        assertThrows(SQLException.class,() -> {
+                signup.insertUser(user);
+        });
     }
 
     @Test

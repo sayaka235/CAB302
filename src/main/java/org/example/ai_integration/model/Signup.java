@@ -15,6 +15,10 @@ public class Signup {
             throw new SQLException("Missing fields", "Complete all fields.");
         }
 
+        if(!(first.matches("^[A-Za-z-]+$"))){
+            throw new SQLException("Firstname is invalid");
+        }
+
         String sql = "INSERT INTO Users (email, firstName, lastName, dob, passwordHash) VALUES (?,?,?,?,?)";
         try (Connection c = Database.getConnection();
              PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
