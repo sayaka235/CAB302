@@ -73,6 +73,9 @@
                 <Pane HBox.hgrow="ALWAYS"/>
                 <Button fx:id="takeNewQuizButton" text="Take New Quiz" styleClass="primary-btn" maxWidth="220"/>
             </VBox>
+            <VBox fx:id="loadCard" visible="false" spacing="10" maxWidth="820" styleClass="card">
+                <Label text="Generating quiz and notes summary..." styleClass="title"/>
+            </VBox>
 
         </StackPane>
     </center>

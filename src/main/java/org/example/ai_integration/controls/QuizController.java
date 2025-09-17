@@ -26,7 +26,7 @@ import static org.example.ai_integration.model.NotesAPI.parseSummary;
 public class QuizController {
 
     @FXML private StackPane rootStack;
-    @FXML private VBox uploadCard, quizCard, historyCard, dropZone;
+    @FXML private VBox uploadCard, quizCard, historyCard, loadCard, dropZone;
     @FXML private Label uploadHint;
     @FXML private Spinner<Integer> questionCountSpinner;
     @FXML private TextField quizTitleField;
@@ -126,6 +126,7 @@ public class QuizController {
     private void showUploadCard() {
         uploadCard.setVisible(true);  uploadCard.setManaged(true);
         quizCard.setVisible(false);   quizCard.setManaged(false);
+        loadCard.setVisible(false); loadCard.setManaged(false);
         historyCard.setVisible(false); historyCard.setManaged(false);
 
         uploadedContent = null;
@@ -139,14 +140,23 @@ public class QuizController {
     }
     private void showQuizCard()   {
         uploadCard.setVisible(false); uploadCard.setManaged(false);
+        loadCard.setVisible(false); loadCard.setManaged(false);
         quizCard.setVisible(true);    quizCard.setManaged(true);
         historyCard.setVisible(false); historyCard.setManaged(false);
     }
     private void showHistoryCard(){
         uploadCard.setVisible(false); uploadCard.setManaged(false);
+        loadCard.setVisible(false); loadCard.setManaged(false);
         quizCard.setVisible(false);   quizCard.setManaged(false);
         historyCard.setVisible(true); historyCard.setManaged(true);
     }
+    private void showLoadCard(){
+        uploadCard.setVisible(false); uploadCard.setManaged(false);
+        quizCard.setVisible(false);   quizCard.setManaged(false);
+        historyCard.setVisible(false); historyCard.setManaged(false);
+        loadCard.setVisible(true); loadCard.setManaged(true);
+    }
+
 
     private Stage getStage() {
         return (Stage) rootStack.getScene().getWindow();
@@ -174,8 +184,7 @@ public class QuizController {
             uploadedContent = FileUtil.readFileContent(f);
             uploadHint.setText("Ready! Click Start Quiz.");
             startQuizButton.setDisable(false);
-            String jsonNotes = NotesAPI.generateSummary(uploadedContent);
-            summaryParsed = parseSummary(jsonNotes);
+
 
         } catch (IOException ex) {
             uploadHint.setText("Failed to read file: " + ex.getMessage());
@@ -219,10 +228,12 @@ public class QuizController {
 
         new Thread(() -> {
             try {
+                showLoadCard();
                 int numQuestions = questionCountSpinner != null ? questionCountSpinner.getValue() : 5;
                 String title = quizTitleField.getText();
                 String imagePath = selectedImageFile != null ? selectedImageFile.getAbsolutePath() : null;
-
+                String jsonNotes = NotesAPI.generateSummary(uploadedContent);
+                summaryParsed = parseSummary(jsonNotes);
                 String json = QuizAPI.generateQuiz(uploadedContent, "Multiple Choice", numQuestions);
                 List<QuizAPI.McqItem> items = QuizAPI.parseMcqArray(json);
 
@@ -233,6 +244,7 @@ public class QuizController {
                 mcqQuestions = QuizDao.loadQuestions(quizId);
 
                 Platform.runLater(() -> {
+                    showQuizCard();
                     selectedByQuestionId.clear();
                     currentIndex = 0;
                     restoreQuizNavHandlers();
