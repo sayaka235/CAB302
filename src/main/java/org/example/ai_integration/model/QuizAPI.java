@@ -5,8 +5,21 @@ import com.google.gson.*;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * API utility class for generating and parsing quizzes with Gemini.
+ * <p>
+ * Builds prompts, sends requests to Gemini, and parses responses
+ * into {@link McqItem} objects for use in the application.
+ */
 public class QuizAPI
 {
+    /**
+     * Gets the Gemini API key from environment variables.
+     * <p>
+     * Throws an error if the key is missing.
+     *
+     * @return the Gemini API key as a string
+     */
     private static String getGeminiApiKey() {
         String key = System.getenv("GEMINI_API_KEY");
         if (key == null || key.isBlank()) {
@@ -14,16 +27,35 @@ public class QuizAPI
         }
         return key.trim();
     }
+    /** OkHttp client for sending HTTP requests */
     private static final OkHttpClient client = new OkHttpClient();
+    /** Gson instance for JSON parsing */
     private static final Gson gson = new Gson();
 
+    /**
+     * Model class representing a single multiple-choice question item.
+     * <p>
+     * Includes the question text, a list of options,
+     * and the index of the correct answer.
+     */
     public static class McqItem
     {
+        /** The question text */
         public String question;
+        /** The list of options (must contain exactly 4) */
         public java.util.List<String> options;
+        /** The correct option index (1-based) */
         public int correct_index;
     }
 
+    /**
+     * Parses a raw response string into a list of {@link McqItem} objects.
+     * <p>
+     * Handles multiple possible response formats from Gemini.
+     *
+     * @param raw the raw string response from Gemini
+     * @return a list of parsed {@link McqItem} objects
+     */
     public static java.util.List<McqItem> parseMcqArray(String raw)
     {
         try {
@@ -54,7 +86,14 @@ public class QuizAPI
         }
     }
 
-
+    /**
+     * Sends a request to Gemini to generate a quiz.
+     *
+     * @param content the content to base the quiz on
+     * @param quizType the type of quiz (Multiple Choice, True/False, Fill in the Blank)
+     * @param numQuestions the number of questions to generate
+     * @return the raw JSON response from Gemini, or an error message
+     */
     public static String generateQuiz(String content, String quizType, int numQuestions)
     {
 
@@ -100,7 +139,12 @@ public class QuizAPI
             return "Error: " + e.getMessage();
         }
     }
-
+    /**
+     * Extracts plain text content from a Gemini JSON response.
+     *
+     * @param obj the Gemini response JSON object
+     * @return the text field of the first candidate
+     */
     private static String extractTextFromGemini(com.google.gson.JsonObject obj) {
         var candidates = obj.getAsJsonArray("candidates");
         if (candidates == null || candidates.size() == 0)
@@ -121,7 +165,12 @@ public class QuizAPI
 
         return p0.get("text").getAsString();
     }
-
+    /**
+     * Extracts the JSON array string from text, removing markdown fences if present.
+     *
+     * @param text the raw text string
+     * @return a substring containing valid JSON
+     */
     private static String extractJsonArrayString(String text) {
         if (text == null) throw new IllegalArgumentException("Empty text from model.");
 
@@ -144,12 +193,24 @@ public class QuizAPI
 
         return t;
     }
-
+    /**
+     * Parses a JSON string into a list of {@link McqItem}.
+     *
+     * @param jsonArray the JSON array string
+     * @return a list of {@link McqItem} objects
+     */
     private static java.util.List<QuizAPI.McqItem> parseArray(String jsonArray) {
         java.lang.reflect.Type listType = new com.google.gson.reflect.TypeToken<java.util.List<QuizAPI.McqItem>>(){}.getType();
         return gson.fromJson(jsonArray, listType);
     }
-
+    /**
+     * Builds a prompt for Gemini depending on the quiz type.
+     *
+     * @param content the content to base the quiz on
+     * @param quizType the type of quiz (Multiple Choice, True/False, Fill in the Blank)
+     * @param numQuestions the number of questions to generate
+     * @return the constructed prompt string
+     */
     private static String buildPrompt(String content, String quizType, int numQuestions)
     {
         switch (quizType)
