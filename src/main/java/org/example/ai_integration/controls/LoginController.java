@@ -14,13 +14,25 @@ import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.util.HexFormat;
 
+/**
+ * Controller for the application's Log In page and provides navigation for the login page.
+ *
+ * This class is connected to {@code LoginScene.fxml}.
+ */
 public class LoginController {
-
+    /** Creates a field to hold the entered email. */
     @FXML private TextField emailField;
-    @FXML private PasswordField passwordField;
-    @FXML private Button loginButton;
-    @FXML private Button goSignupButton;
 
+    /** Creates a field to hold the entered password. */
+    @FXML private PasswordField passwordField;
+
+    /**
+     * Handles the login logic.
+     *
+     * <p>
+     * Checks if the email and password entered by the user match the values stored in the database.
+     * If they do, a user object is created and the dashboard is loaded.
+     */
     @FXML
     private void handleLogin() {
         String email = emailField.getText().trim();
@@ -39,15 +51,15 @@ public class LoginController {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     String dbFirstname = rs.getString("firstName");
-                    String dbLastname = rs.getString("lastName");
-                    //String dbEmail = rs.getString("email");
-                    //String dbPasswordHash = rs.getString("passwordHash");
-                    LocalDate dbDob = LocalDate.parse(rs.getString("dob"));
-                    String dbuserID  = rs.getString("id");
+                    String dbLastname  = rs.getString("lastName");
+                    LocalDate dbDob    = LocalDate.parse(rs.getString("dob"));
+                    String dbuserID    = rs.getString("id");
 
                     User loggedInUser = new User(email, dbFirstname, dbLastname, dbDob, sha256(pass), dbuserID);
                     UserManager.getInstance().setLoggedInUser(loggedInUser);
-                    alert(Alert.AlertType.INFORMATION, "Welcome",  "Hello " + loggedInUser.getName()+ ", login successful." );
+
+                    alert(Alert.AlertType.INFORMATION, "Welcome",
+                            "Hello " + loggedInUser.getName() + ", login successful.");
                     Navigator.toDashboard();
                 } else {
                     alert(Alert.AlertType.ERROR, "Login failed", "Invalid email or password.");
@@ -59,12 +71,22 @@ public class LoginController {
         }
     }
 
+    /** Goes to the sign-up page if the "Go to Signup" button is pressed. */
     @FXML
     private void goSignup() {
         try { Navigator.toSignup(); }
-        catch (Exception e) { e.printStackTrace(); alert(Alert.AlertType.ERROR, "Navigation error", e.getMessage()); }
+        catch (Exception e) {
+            e.printStackTrace();
+            alert(Alert.AlertType.ERROR, "Navigation error", e.getMessage());
+        }
     }
 
+    /**
+     * Hashes the entered password so it can be compared with the database value.
+     *
+     * @param s the text to hash
+     * @return the hashed string
+     */
     private static String sha256(String s) {
         try {
             var md = MessageDigest.getInstance("SHA-256");
@@ -72,9 +94,18 @@ public class LoginController {
         } catch (Exception e) { throw new RuntimeException(e); }
     }
 
+    /**
+     * Creates an alert message to show warnings or errors.
+     *
+     * @param t     the type of alert (e.g., ERROR, INFORMATION)
+     * @param title the title of the alert
+     * @param msg   the content of the alert
+     */
     private static void alert(Alert.AlertType t, String title, String msg) {
         Alert a = new Alert(t);
-        a.setTitle(title); a.setHeaderText(null); a.setContentText(msg);
+        a.setTitle(title);
+        a.setHeaderText(null);
+        a.setContentText(msg);
         a.showAndWait();
     }
 }

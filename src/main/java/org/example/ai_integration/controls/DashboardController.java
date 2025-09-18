@@ -23,6 +23,7 @@ import java.util.Objects;
 
 /**
  * Controller for the application's dashboard (home page).
+ *
  * <p>
  * Provides navigation to other pages (quiz, notes library, stats, etc.)
  * and displays personalized information for the logged-in user.
@@ -49,6 +50,7 @@ public class DashboardController {
 
     /**
      * Initialises the dashboard view.
+     *
      * <p>
      * - Displays the current user's name.<br>
      * - Loads a decorative image.<br>
@@ -99,6 +101,7 @@ public class DashboardController {
 
     /**
      * Navigates to the quiz upload scene.
+     *
      * @param actionEvent the button click event
      */
     @FXML
@@ -113,7 +116,6 @@ public class DashboardController {
 
     /**
      * Navigates to the notes library scene.
-     *
      * @param actionEvent the button click event
      */
     @FXML
@@ -128,7 +130,6 @@ public class DashboardController {
 
     /**
      * Navigates to the quiz library scene.
-     *
      * @param actionEvent the button click event
      */
     @FXML
@@ -143,7 +144,6 @@ public class DashboardController {
 
     /**
      * Logs out the current user and navigates back to the signup scene.
-     *
      * @param actionEvent the button click event
      */
     @FXML
@@ -170,7 +170,6 @@ public class DashboardController {
 
     /**
      * Displays an alert dialog with the given parameters.
-     *
      * @param t     the type of alert (e.g., ERROR, INFORMATION)
      * @param title the title of the alert window
      * @param msg   the content message of the alert
@@ -185,7 +184,6 @@ public class DashboardController {
 
     /**
      * Navigates to the user statistics scene.
-     *
      * @param actionEvent the button click event
      */
     @FXML

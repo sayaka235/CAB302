@@ -14,12 +14,29 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
+/**
+ * Controller for the notes library page.
+ * <p>
+ * This shows a list of saved notes for the logged in user
+ * and lets them pick one to read or go back to the dashboard.
+ * This class is connected to {@code notesLibrary.fxml}.
+ */
 public class NotesLibraryController {
+    /** A list that stores all the notes pulled from the database. */
     private ArrayList<NoteSummary> notesList = new ArrayList<>();
 
+    /** Groups all the note radio buttons so only one can be selected at a time. */
     @FXML private ToggleGroup DynamicToggleGroup;
+
+    /** The container that holds the note radio buttons. */
     @FXML private VBox radioButtonsContainer;
 
+    /**
+     * Sets up the notes library page.
+     * <p>
+     * Connects to the database, finds all the notes for the logged-in user,
+     * and creates radio buttons so the user can pick one.
+     */
     @FXML
     private void initialize() {
         String sql = "SELECT noteID, title, notes FROM noteSummary WHERE userID = ?";
@@ -33,7 +50,6 @@ public class NotesLibraryController {
                     long noteID = rs.getLong("noteID");
                     String title = rs.getString("title");
                     String notesContent = rs.getString("notes");
-                    /*String extNotesURL = rs.getString("extNotesURL");*/
 
                     NoteSummary note = new NoteSummary(noteID, title, notesContent);
                     notesList.add(note);
@@ -48,6 +64,13 @@ public class NotesLibraryController {
         }
     }
 
+    /**
+     * Shows an alert message if something goes wrong.
+     *
+     * @param t the type of alert (e.g., ERROR, WARNING, INFO)
+     * @param title the title of the alert window
+     * @param msg the text shown in the alert
+     */
     private static void alert(Alert.AlertType t, String title, String msg) {
         Alert a = new Alert(t);
         a.setTitle(title);
@@ -56,6 +79,11 @@ public class NotesLibraryController {
         a.showAndWait();
     }
 
+    /**
+     * Goes back to the dashboard when the dashboard button is pressed.
+     *
+     * @param actionEvent the button click event
+     */
     @FXML
     private void goToDashBoard(ActionEvent actionEvent) {
         try {
@@ -66,7 +94,16 @@ public class NotesLibraryController {
         }
     }
 
-    @FXML private void readNotes(ActionEvent actionEvent) {
+    /**
+     * Opens the notes that the user selected.
+     * <p>
+     * Finds the chosen note from the list and sends it to
+     * {@link NoteSummaryManager} so it can be shown on the next page.
+     *
+     * @param actionEvent the button click event
+     */
+    @FXML
+    private void readNotes(ActionEvent actionEvent) {
         try {
             RadioButton selectedRadioButton = (RadioButton) DynamicToggleGroup.getSelectedToggle();
             if (selectedRadioButton != null) {
@@ -83,7 +120,7 @@ public class NotesLibraryController {
             }
         }
         catch(Exception e){
-            alert(Alert.AlertType.ERROR, "No quiz selected", e.getMessage());
+            alert(Alert.AlertType.ERROR, "No note selected", e.getMessage());
         }
     }
 }
