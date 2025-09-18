@@ -21,12 +21,40 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Objects;
 
+/**
+ * Controller for the application's dashboard (home page).
+ * <p>
+ * Provides navigation to other pages (quiz, notes library, stats, etc.)
+ * and displays personalized information for the logged-in user.
+ * This class is connected to {@code DashboardScene.fxml}.
+ */
 public class DashboardController {
-    private ArrayList<Quiz> quizList = new ArrayList<Quiz>();
+    /** A list of quizzes retrieved from the database. */
+    private ArrayList<Quiz> quizList = new ArrayList<>();
+
+    /** Toggle group used to group dynamically created quiz radio buttons. */
     @FXML private ToggleGroup DynamicToggleGroup;
+
+    /** The container for dynamically generated quiz radio buttons. */
     @FXML private VBox radioButtonsContainer;
+
+    /** Displays decorative star icons on the dashboard. */
     @FXML private ImageView Stars;
+
+    /** Displays the welcome message with the user's name. */
     @FXML private Label WelcomeLabel;
+
+    /** The sidebar container that can be toggled open or closed. */
+    @FXML private VBox sidebar;
+
+    /**
+     * Initialises the dashboard view.
+     * <p>
+     * - Displays the current user's name.<br>
+     * - Loads a decorative image.<br>
+     * - Fetches recent quizzes from the database.<br>
+     * - Dynamically generates radio buttons for each quiz.
+     */
     public void initialize() {
         WelcomeLabel.setText("Hello " + UserManager.getInstance().getLoggedInUser().getName());
 
@@ -38,14 +66,12 @@ public class DashboardController {
             System.err.println("Error loading image: " + e.getMessage());
         }
 
-        // make sure ToggleGroup exists
         if (DynamicToggleGroup == null) {
             DynamicToggleGroup = new ToggleGroup();
         }
 
         String sql = "SELECT quizID, title FROM Quiz WHERE userID = ?";
         quizList.clear();
-        System.out.println("Recently attempted quizzes");
 
         try (Connection c = Database.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
@@ -59,7 +85,7 @@ public class DashboardController {
 
                     Quiz quiz = new Quiz(quizID, quizTitle);
                     quizList.add(quiz);
-                    QuizManager.getInstance().addQuiz(quiz); // <- add back to manager
+                    QuizManager.getInstance().addQuiz(quiz);
 
                     RadioButton radioButton = new RadioButton(quizTitle);
                     radioButton.setToggleGroup(DynamicToggleGroup);
@@ -71,31 +97,56 @@ public class DashboardController {
         }
     }
 
-
+    /**
+     * Navigates to the quiz upload scene.
+     *
+     * @param actionEvent the button click event
+     */
     @FXML
     private void fileUpload(ActionEvent actionEvent) {
         try {
             Navigator.toQuiz();
         } catch (Exception e) {
-            e.printStackTrace();alert(Alert.AlertType.ERROR, "Navigation error", e.getMessage());
+            e.printStackTrace();
+            alert(Alert.AlertType.ERROR, "Navigation error", e.getMessage());
         }
     }
+
+    /**
+     * Navigates to the notes library scene.
+     *
+     * @param actionEvent the button click event
+     */
     @FXML
-    private void notesLibrary(ActionEvent actionEvent){
-        try{
+    private void notesLibrary(ActionEvent actionEvent) {
+        try {
             Navigator.toNotesLibrary();
-        } catch (Exception e){
-            e.printStackTrace();alert(Alert.AlertType.ERROR, "Navigation error", e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            alert(Alert.AlertType.ERROR, "Navigation error", e.getMessage());
         }
     }
+
+    /**
+     * Navigates to the quiz library scene.
+     *
+     * @param actionEvent the button click event
+     */
     @FXML
     private void quizLibrary(ActionEvent actionEvent) {
         try {
             Navigator.toQuizLibrary();
         } catch (Exception e) {
-            e.printStackTrace();alert(Alert.AlertType.ERROR, "Navigation error", e.getMessage());
+            e.printStackTrace();
+            alert(Alert.AlertType.ERROR, "Navigation error", e.getMessage());
         }
     }
+
+    /**
+     * Logs out the current user and navigates back to the signup scene.
+     *
+     * @param actionEvent the button click event
+     */
     @FXML
     private void logOut(ActionEvent actionEvent) {
         try {
@@ -105,8 +156,10 @@ public class DashboardController {
             e.printStackTrace();
         }
     }
-    @FXML private VBox sidebar;
 
+    /**
+     * Toggles the sidebar width between collapsed and expanded states.
+     */
     @FXML
     private void toggleSidebar() {
         if (sidebar.getPrefWidth() > 50) {
@@ -116,17 +169,33 @@ public class DashboardController {
         }
     }
 
+    /**
+     * Displays an alert dialog with the given parameters.
+     *
+     * @param t     the type of alert (e.g., ERROR, INFORMATION)
+     * @param title the title of the alert window
+     * @param msg   the content message of the alert
+     */
     private static void alert(Alert.AlertType t, String title, String msg) {
         Alert a = new Alert(t);
-        a.setTitle(title); a.setHeaderText(null); a.setContentText(msg);
+        a.setTitle(title);
+        a.setHeaderText(null);
+        a.setContentText(msg);
         a.showAndWait();
     }
 
-    @FXML private void userStats(ActionEvent actionEvent) {
+    /**
+     * Navigates to the user statistics scene.
+     *
+     * @param actionEvent the button click event
+     */
+    @FXML
+    private void userStats(ActionEvent actionEvent) {
         try {
             Navigator.toUserStats();
         } catch (Exception e) {
-            e.printStackTrace();alert(Alert.AlertType.ERROR, "Navigation error", e.getMessage());
+            e.printStackTrace();
+            alert(Alert.AlertType.ERROR, "Navigation error", e.getMessage());
         }
     }
 }
