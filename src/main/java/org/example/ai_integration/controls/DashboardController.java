@@ -99,7 +99,6 @@ public class DashboardController {
 
     /**
      * Navigates to the quiz upload scene.
-     *
      * @param actionEvent the button click event
      */
     @FXML
