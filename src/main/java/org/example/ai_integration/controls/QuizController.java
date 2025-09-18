@@ -22,39 +22,76 @@ import java.sql.SQLException;
 import java.util.*;
 
 import static org.example.ai_integration.model.NotesAPI.parseSummary;
-
+/**
+ * Controller for the quiz page of the app.
+ * <p>
+ * Handles uploading notes, generating quizzes, taking quizzes,
+ * and showing results and history of past attempts.
+ * Connected to {@code quiz-view.fxml}.
+ */
 public class QuizController {
-
+    /** The main container of the quiz scene */
     @FXML private StackPane rootStack;
+    /** Cards that swap between upload, quiz, history, and loading views */
     @FXML private VBox uploadCard, quizCard, historyCard, loadCard, dropZone;
+    /** Hint label for uploading a file */
     @FXML private Label uploadHint;
+    /** Spinner to choose how many questions to generate */
     @FXML private Spinner<Integer> questionCountSpinner;
+    /** Field where the user types the quiz title */
     @FXML private TextField quizTitleField;
+    /** Button to upload an image for the quiz */
     @FXML private Button uploadImageButton;
+    /** Label showing the uploaded image file name */
     @FXML private Label imageFileLabel;
+    /** Buttons for uploading and starting a quiz */
     @FXML private Button uploadButton, startQuizButton;
+    /** Labels and progress bar for showing quiz progress */
     @FXML private Label questionCounterLabel, percentCompleteLabel, questionLabel;
     @FXML private ProgressBar progressBar;
+    /** Box containing answer options */
     @FXML private VBox optionsBox;
+    /** Navigation buttons for moving through the quiz */
     @FXML private Button backButton, nextButton;
+    /** Button to take a brand new quiz */
     @FXML private Button takeNewQuizButton;
+    /** List of past attempts */
     @FXML private ListView<QuizDao.AttemptRow> attemptsList;
+    /** Button to retake a quiz */
     @FXML private Button retakeButton;
+    /** Output area for showing messages */
     @FXML private TextArea outputArea;
+    /** Button if quiz is selected from the library */
     @FXML private Button quizSelectedFromLibrary;
+    /** ScrollPane for displaying results nicely */
     @FXML private ScrollPane resultsScroll;
 
+    /** The file the user uploaded */
     private File selectedImageFile;
+    /** The raw text content from the uploaded file */
     private String uploadedContent = null;
+    /** Current quiz id */
     private long quizId;
+    /** Current attempt id (score id) */
     private long scoreId;
+    /** Tracks which question index the user is up to */
     private int currentIndex = 0;
+    /** The summary generated from uploaded notes */
     private String summaryParsed;
+    /** The list of MCQ questions in the current quiz */
     private List<QuizDao.McqQuestion> mcqQuestions = new ArrayList<>();
+    /** Keeps track of user’s chosen answers */
     private final Map<Long, Integer> selectedByQuestionId = new HashMap<>();
 
+    /** The id of the currently logged-in user */
     private long CURRENT_USER_ID = -1;
 
+    /**
+     * Sets up the quiz page when first loaded.
+     * <p>
+     * Initializes drag & drop upload, image picker, navigation buttons,
+     * and checks whether the user came from the quiz library or is starting fresh.
+     */
     @FXML
     private void initialize() {
         try {
@@ -122,7 +159,7 @@ public class QuizController {
                 retakeButton.setDisable(sel == null));
         attemptsList.setOnMouseClicked(e -> { if (e.getClickCount() == 2) beginRetakeSelected(); });
     }
-
+    /** Shows the upload card (where user uploads notes to start a new quiz). */
     private void showUploadCard() {
         uploadCard.setVisible(true);  uploadCard.setManaged(true);
         quizCard.setVisible(false);   quizCard.setManaged(false);
@@ -138,18 +175,21 @@ public class QuizController {
 
         restoreQuizNavHandlers();
     }
+    /** Shows the quiz-taking card (where the questions are). */
     private void showQuizCard()   {
         uploadCard.setVisible(false); uploadCard.setManaged(false);
         loadCard.setVisible(false); loadCard.setManaged(false);
         quizCard.setVisible(true);    quizCard.setManaged(true);
         historyCard.setVisible(false); historyCard.setManaged(false);
     }
+    /** Shows the history card (list of past attempts). */
     private void showHistoryCard(){
         uploadCard.setVisible(false); uploadCard.setManaged(false);
         loadCard.setVisible(false); loadCard.setManaged(false);
         quizCard.setVisible(false);   quizCard.setManaged(false);
         historyCard.setVisible(true); historyCard.setManaged(true);
     }
+    /** Shows the loading card (used when quiz is being generated). */
     private void showLoadCard(){
         uploadCard.setVisible(false); uploadCard.setManaged(false);
         quizCard.setVisible(false);   quizCard.setManaged(false);
@@ -157,11 +197,14 @@ public class QuizController {
         loadCard.setVisible(true); loadCard.setManaged(true);
     }
 
-
+    /** Gets the stage (window) the quiz is running in. */
     private Stage getStage() {
         return (Stage) rootStack.getScene().getWindow();
     }
-
+    /**
+     * Navigates back to the dashboard page.
+     * @param actionEvent button click
+     */
     @FXML
     private void goToDashBoard(ActionEvent actionEvent) {
         try {
@@ -172,6 +215,7 @@ public class QuizController {
         }
     }
 
+    /** Opens the quiz library page. */
     private void goToQuizLibrary(){
             try {
                 Navigator.toQuizLibrary();
@@ -179,6 +223,10 @@ public class QuizController {
                 e.printStackTrace(); alert(Alert.AlertType.ERROR, "Navigation error", e.getMessage());
             }
     }
+    /**
+     * Reads the content of the uploaded file and prepares it for quiz generation.
+     * @param f the file uploaded by the user
+     */
     private void handlePickedFile(File f) {
         try {
             uploadedContent = FileUtil.readFileContent(f);
@@ -191,7 +239,7 @@ public class QuizController {
             startQuizButton.setDisable(true);
         }
     }
-
+    /** Starts a quiz that was chosen from the quiz library. */
     private void startQuizFromLibrary(){
         new Thread(() -> {
             try {
@@ -213,7 +261,7 @@ public class QuizController {
             }
         }).start();
     }
-
+    /** Starts generating and loading a brand new quiz from uploaded notes. */
     private void startQuiz() {
         if (uploadedContent == null) {
             if (outputArea != null) outputArea.setText("Please upload a file first.");
@@ -259,7 +307,7 @@ public class QuizController {
             }
         }).start();
     }
-
+    /** Renders the current question and answer options on screen. */
     private void renderQuestion() {
         QuizDao.McqQuestion q = mcqQuestions.get(currentIndex);
 
@@ -294,7 +342,7 @@ public class QuizController {
         backButton.setDisable(currentIndex == 0);
         nextButton.setText(currentIndex == mcqQuestions.size() - 1 ? "Finish" : "Next");
     }
-
+    /** Handles what happens when the user clicks “Next” (or Finish). */
     private void onNext() {
         QuizDao.McqQuestion q = mcqQuestions.get(currentIndex);
 
@@ -341,7 +389,11 @@ public class QuizController {
             showHistoryCard();
         }
     }
-
+    /**
+     * Shows the results screen after finishing the quiz.
+     * @param rows list of result rows (with question text, options, correctness)
+     * @param percent the overall score in percent
+     */
     private void showResults(List<QuizDao.ResultRow> rows, int percent) {
         showQuizCard();
 
@@ -414,7 +466,7 @@ public class QuizController {
         nextButton.setText("Take New Quiz");
         nextButton.setOnAction(e -> goToQuizLibrary());  // this will reset state (see section B)
     }
-
+    /** Resets the navigation buttons for quiz-taking mode. */
     private void restoreQuizNavHandlers() {
         backButton.setText("Back");
         backButton.setDisable(true);
@@ -425,7 +477,7 @@ public class QuizController {
         nextButton.setOnAction(e -> onNext());
     }
 
-
+    /** Loads the quiz attempt history for the current user. */
     private void loadHistory() {
         try {
             var attempts = QuizDao.listAttemptsForUser(CURRENT_USER_ID);
@@ -465,18 +517,26 @@ public class QuizController {
             retakeButton.setDisable(true);
         }
     }
-
+    /** Starts retaking whichever attempt the user selected in the history list. */
     private void beginRetakeSelected() {
         var sel = attemptsList.getSelectionModel().getSelectedItem();
         if (sel != null) beginRetake(sel.quizID);
     }
-
+    /**
+     * Shows a popup alert with the given message.
+     * @param t the alert type (ERROR, INFO, etc.)
+     * @param title the title of the alert window
+     * @param msg the message to show
+     */
     private static void alert(Alert.AlertType t, String title, String msg) {
         Alert a = new Alert(t);
         a.setTitle(title); a.setHeaderText(null); a.setContentText(msg);
         a.showAndWait();
     }
-
+    /**
+     * Starts retaking a specific quiz attempt by its ID.
+     * @param quizIdToRetake the quiz ID to retake
+     */
     private void beginRetake(long quizIdToRetake) {
         new Thread(() -> {
             try {

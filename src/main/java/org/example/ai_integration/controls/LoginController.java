@@ -13,14 +13,24 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.util.HexFormat;
-
+/**
+ * Controller for the application's login page.
+ * <p>
+ * Provides navigation and login logic for {@code LoginScene.fxml}.
+ */
 public class LoginController {
-
+    /** Field to hold the entered email. */
     @FXML private TextField emailField;
-    @FXML private PasswordField passwordField;
-    @FXML private Button loginButton;
-    @FXML private Button goSignupButton;
 
+    /** Field to hold the entered password. */
+    @FXML private PasswordField passwordField;
+
+    /**
+     * Handles the login process.
+     * <p>
+     * Verifies that the entered email and password match a user in the database.
+     * If successful, creates a {@link User} object and navigates to the dashboard.
+     */
     @FXML
     private void handleLogin() {
         String email = emailField.getText().trim();
@@ -58,20 +68,34 @@ public class LoginController {
             alert(Alert.AlertType.ERROR, "Database error", e.getMessage());
         }
     }
-
+    /**
+     * Goes to the sign-up page if the "Go to Signup" button is pressed.
+     */
     @FXML
     private void goSignup() {
         try { Navigator.toSignup(); }
         catch (Exception e) { e.printStackTrace(); alert(Alert.AlertType.ERROR, "Navigation error", e.getMessage()); }
     }
 
+    /**
+     * Hashes the entered password using SHA-256.
+     *
+     * @param s the string to hash
+     * @return the SHA-256 hash of the string
+     */
     private static String sha256(String s) {
         try {
             var md = MessageDigest.getInstance("SHA-256");
             return HexFormat.of().formatHex(md.digest(s.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
         } catch (Exception e) { throw new RuntimeException(e); }
     }
-
+    /**
+     * Creates an alert message to show warnings or errors.
+     *
+     * @param t     the type of alert (e.g., ERROR, INFORMATION)
+     * @param title the title of the alert window
+     * @param msg   the content message of the alert
+     */
     private static void alert(Alert.AlertType t, String title, String msg) {
         Alert a = new Alert(t);
         a.setTitle(title); a.setHeaderText(null); a.setContentText(msg);
