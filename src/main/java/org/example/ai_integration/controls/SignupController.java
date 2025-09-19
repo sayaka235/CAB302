@@ -5,6 +5,8 @@ import javafx.scene.control.*;
 import org.example.ai_integration.Navigator;
 import org.example.ai_integration.model.Signup;
 import org.example.ai_integration.model.User;
+import org.example.ai_integration.tests.userRepo;
+import org.example.ai_integration.tests.validations;
 
 import java.security.MessageDigest;
 import java.time.LocalDate;
@@ -50,14 +52,17 @@ public class SignupController {
     @FXML
     private void handleSignup() {
         try {
-            String email = emailField.getText().trim();
-            String first = firstNameField.getText().trim();
-            String last  = lastNameField.getText().trim();
-            LocalDate dob = dobPicker.getValue();
-            String pass  = sha256(passwordField.getText());
+            String emailRaw = emailField.getText();
+            String firstRaw = firstNameField.getText();
+            String lastRaw  = lastNameField.getText();
+            LocalDate dob   = dobPicker.getValue();
+            String hash     = sha256(passwordField.getText());
 
-            User newUser = new User(email, first, last, dob, pass);
-            signup.insertUser(newUser);
+            User newUser = new User(emailRaw, firstRaw, lastRaw, dob, hash);
+
+            validations service = new validations(new userRepo());
+            service.signup(newUser);
+
             alert(Alert.AlertType.INFORMATION,"Success","Account created. You can log in now.");
             Navigator.toLogin();
         } catch (Exception e) {
