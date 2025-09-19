@@ -7,27 +7,8 @@
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="org.example.ai_integration.controls.DashboardController"
             style="-fx-background-color: linear-gradient(to bottom, #b3c7f7, #244678);">
-
-    <!-- Sidebar -->
     <left>
-        <VBox fx:id="sidebar" spacing="10" prefWidth="200"
-              style="-fx-background-color: #1e3a6e; -fx-padding: 15;">
-            <children>
-                <Button text="☰" onAction="#toggleSidebar"
-                        style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 16;"/>
-                <Separator/>
-                <Button text="Notes" onAction="#notesLibrary"
-                        style="-fx-background-color: transparent; -fx-text-fill: white;"/>
-                <Button text="Quiz Library" onAction="#quizLibrary"
-                        style="-fx-background-color: transparent; -fx-text-fill: white;"/>
-                <Button text="Stats" onAction="#userStats"
-                        style="-fx-background-color: transparent; -fx-text-fill: white;"/>
-                <Button text="Upload File" onAction="#fileUpload"
-                        style="-fx-background-color: transparent; -fx-text-fill: white;"/>
-                <Button text="Logout" onAction="#logOut"
-                        style="-fx-background-color: transparent; -fx-text-fill: white;"/>
-            </children>
-        </VBox>
+        <fx:include source="Sidebar.fxml"/>
     </left>
 
     <!-- Main content -->
