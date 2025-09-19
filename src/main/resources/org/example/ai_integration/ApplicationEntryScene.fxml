@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 
-<StackPane xmlns="http://javafx.com/javafx/24.0.1"
+<StackPane xmlns="http://javafx.com/javafx/21"
            xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="org.example.ai_integration.controls.SignupController"
            style="-fx-background-color: linear-gradient(to bottom, #b3c7f7, #244678);">
