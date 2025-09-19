@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -35,6 +32,10 @@
             </padding>
         </VBox>
         <Button text = "Start selected quiz" onAction="#startQuiz" style="-fx-background-color: #054fb9; -fx-text-fill: white; -fx-background-radius: 5; -fx-font-size: 15;"  prefWidth="180" prefHeight="30"/>
+        <Button fx:id="deleteQuizButton"
+                text="Delete"
+                onAction="#deleteSelectedQuiz"
+                disable="true"/>
     </VBox>
 </children>
 </StackPane>
