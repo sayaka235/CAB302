@@ -3,7 +3,24 @@ package org.example.ai_integration.model;
 import java.sql.*;
 import java.time.LocalDate;
 
+/**
+ * Handles the logic for signing up new users.
+ * <p>
+ * Provides functionality to validate input fields
+ * and insert a new user into the database.
+ */
 public class Signup {
+    /**
+     * Inserts a new user into the database after validating their input.
+     * <p>
+     * This method checks that all required fields are filled,
+     * ensures that the first name contains only letters or hyphens,
+     * and then saves the user information into the {@code Users} table.
+     *
+     * @param newUser the user object containing signup details
+     * @throws SQLException if fields are missing, validation fails,
+     *                      or a database error occurs
+     */
     public void insertUser(User newUser) throws SQLException {
         String email = newUser.getEmail();
         String first = newUser.getFirst();

@@ -1,15 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.ai_integration.controls.UserStatsController">
-    <children>
-        <Label fx:id="headingLabel" text="Loading...">
-            <font>
-                <Font name="System Bold" size="24.0" />
-            </font>
-        </Label>
-    </children>
-</VBox>
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.ai_integration.controls.UserStatsController">
+
+    <!-- Sidebar on the left -->
+    <left>
+        <fx:include source="Sidebar.fxml"/>
+    </left>
+
+    <!-- Main content in the center -->
+    <center>
+        <VBox alignment="CENTER" spacing="20.0">
+            <children>
+                <Label fx:id="headingLabel" text="Loading...">
+                    <font>
+                        <Font name="System Bold" size="24"/>
+                    </font>
+                </Label>
+            </children>
+        </VBox>
+    </center>
+</BorderPane>

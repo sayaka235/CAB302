@@ -273,4 +273,53 @@ public final class QuizDao {
             this.correct = correct; this.chosen = chosen; this.isCorrect = ok;
         }
     }
+
+    // -----------------------------
+    // Delete quiz
+    // -----------------------------
+    public static boolean deleteQuiz(long quizId, long userId) throws SQLException {
+        try (Connection c = Database.getConnection()) {
+            c.setAutoCommit(false);
+            try {
+                try (PreparedStatement auth = c.prepareStatement(
+                        "SELECT 1 FROM Quiz WHERE quizID=? AND userID=?")) {
+                    auth.setLong(1, quizId);
+                    auth.setLong(2, userId);
+                    try (ResultSet rs = auth.executeQuery()) {
+                        if (!rs.next()) { c.rollback(); return false; }
+                    }
+                }
+                try (PreparedStatement ps = c.prepareStatement(
+                        "DELETE FROM QuizAttemptAnswer " +
+                                "WHERE scoreID IN (SELECT scoreID FROM QuizScoreArray WHERE quizID=?)")) {
+                    ps.setLong(1, quizId);
+                    ps.executeUpdate();
+                }
+                try (PreparedStatement ps = c.prepareStatement(
+                        "DELETE FROM QuizScoreArray WHERE quizID=?")) {
+                    ps.setLong(1, quizId);
+                    ps.executeUpdate();
+                }
+                try (PreparedStatement ps = c.prepareStatement(
+                        "DELETE FROM QuizQuestions WHERE quizID=?")) {
+                    ps.setLong(1, quizId);
+                    ps.executeUpdate();
+                }
+                try (PreparedStatement ps = c.prepareStatement(
+                        "DELETE FROM Quiz WHERE quizID=? AND userID=?")) {
+                    ps.setLong(1, quizId);
+                    ps.setLong(2, userId);
+                    if (ps.executeUpdate() == 0) { c.rollback(); return false; }
+                }
+
+                c.commit();
+                return true;
+            } catch (SQLException ex) {
+                c.rollback();
+                throw ex;
+            } finally {
+                c.setAutoCommit(true);
+            }
+        }
+    }
 }
