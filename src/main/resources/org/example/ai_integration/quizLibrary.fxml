@@ -1,41 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<StackPane prefHeight="700.0" prefWidth="700.0" style="-fx-background-color: linear-gradient(to bottom, #b3c7f7, #244678);" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.ai_integration.controls.QuizLibraryController">
-<children>
-    <VBox alignment="TOP_CENTER" maxHeight="560" maxWidth="580" spacing="12" style="-fx-background-color: white; -fx-background-radius: 10;">
-        <padding>
-            <Insets bottom="16" left="16" right="16" top="16" />
-        </padding>
-        <effect>
-            <DropShadow blurType="ONE_PASS_BOX" color="rgba(0,0,0,0.2)" offsetX="4" offsetY="4" radius="8" />
-        </effect>
-        <HBox><Button onAction="#goToDashBoard" text="Home" style="-fx-background-color: #054fb9; -fx-text-fill: white; -fx-background-radius: 5;" /></HBox>
-        <VBox alignment = "CENTER" spacing = "20">
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.ai_integration.controls.QuizLibraryController"
+            style="-fx-background-color: linear-gradient(to bottom, #b3c7f7, #244678);">
+
+    <!-- Sidebar -->
+    <left>
+        <fx:include source="Sidebar.fxml"/>
+    </left>
+
+    <!-- Main content -->
+    <center>
+        <VBox alignment="TOP_CENTER" maxHeight="560" maxWidth="580" spacing="12"
+              style="-fx-background-color: white; -fx-background-radius: 10;">
             <padding>
-                <Insets bottom="30" left="5" right="5" top="5" />
+                <Insets bottom="16" left="16" right="16" top="16"/>
             </padding>
-            <Label text = "Quiz Library" textFill="BLACK">
-                <font><Font name="Verdana" size="40" /></font>
-            </Label>
-            <Separator maxWidth="250" />
+            <effect>
+                <DropShadow blurType="ONE_PASS_BOX" color="rgba(0,0,0,0.2)" offsetX="4" offsetY="4" radius="8"/>
+            </effect>
+
+            <HBox>
+                <Button onAction="#goToDashBoard" text="Home"
+                        style="-fx-background-color: #054fb9; -fx-text-fill: white; -fx-background-radius: 5;"/>
+            </HBox>
+
+            <VBox alignment="CENTER" spacing="20">
+                <padding>
+                    <Insets bottom="30" left="5" right="5" top="5"/>
+                </padding>
+                <Label text="Quiz Library" textFill="BLACK">
+                    <font><Font name="Verdana" size="40"/></font>
+                </Label>
+                <Separator maxWidth="250"/>
+            </VBox>
+
+            <fx:define>
+                <ToggleGroup fx:id="DynamicToggleGroup"/>
+            </fx:define>
+
+            <VBox fx:id="radioButtonsContainer" spacing="15" stylesheets="@radiobuttons.css">
+                <padding>
+                    <Insets left="25"/>
+                </padding>
+            </VBox>
+
+            <Button text="Start selected quiz" onAction="#startQuiz"
+                    style="-fx-background-color: #054fb9; -fx-text-fill: white; -fx-background-radius: 5; -fx-font-size: 15;"
+                    prefWidth="180" prefHeight="30"/>
         </VBox>
-        <fx:define> <ToggleGroup fx:id="DynamicToggleGroup"/></fx:define>
-        <VBox fx:id = "radioButtonsContainer" spacing = "15" stylesheets = "@radiobuttons.css">
-            <padding>
-            <Insets left="25"/>
-            </padding>
-        </VBox>
-        <Button text = "Start selected quiz" onAction="#startQuiz" style="-fx-background-color: #054fb9; -fx-text-fill: white; -fx-background-radius: 5; -fx-font-size: 15;"  prefWidth="180" prefHeight="30"/>
-        <Button fx:id="deleteQuizButton"
-                text="Delete"
-                onAction="#deleteSelectedQuiz"
-                disable="true"/>
-    </VBox>
-</children>
-</StackPane>
+    </center>
+</BorderPane>

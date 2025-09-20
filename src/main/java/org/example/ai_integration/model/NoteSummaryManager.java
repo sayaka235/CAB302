@@ -1,4 +1,5 @@
 package org.example.ai_integration.model;
+
 /**
  * Singleton manager class for handling the current {@link NoteSummary}.
  * <p>
@@ -9,7 +10,7 @@ public class NoteSummaryManager {
     /** The single instance of this manager (Singleton pattern) */
     private static NoteSummaryManager instance;
     /** The current note summary being managed */
-    private NoteSummary note ;
+    private NoteSummary note;
 
     /**
      * Gets the single instance of the {@code NoteSummaryManager}.
@@ -24,6 +25,7 @@ public class NoteSummaryManager {
         }
         return instance;
     }
+
     /**
      * Sets the current note summary to manage.
      *
@@ -32,10 +34,13 @@ public class NoteSummaryManager {
     public void setNote(NoteSummary note) {
         this.note = note;
     }
+
     /**
      * Gets the currently stored note summary.
      *
      * @return the current {@link NoteSummary}, or {@code null} if none is set
      */
-    public NoteSummary getCurrentSummaryNote(){return this.note;}
+    public NoteSummary getCurrentSummaryNote() {
+        return this.note;
+    }
 }

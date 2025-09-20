@@ -16,7 +16,6 @@ public class Notes {
     /** Optional external URL linking to additional notes */
     private String extNotesURL;
 
-
     /**
      * Creates a new {@code Notes} object with all its attributes.
      *
@@ -31,6 +30,7 @@ public class Notes {
         this.notes = notes;
         this.extNotesURL = extNotesURL;
     }
+
     /** @return the unique note ID */
     public long getNoteID() { return noteID; }
 

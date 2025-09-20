@@ -8,6 +8,7 @@ import org.example.ai_integration.model.User;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+
 /**
  * Controller for the user stats page of the application.
  * <p>
@@ -16,6 +17,7 @@ import java.util.ResourceBundle;
  * Connected to {@code UserStatsScene.fxml}.
  */
 public class UserStatsController implements Initializable {
+
     /** Label at the top of the page that greets the user */
     @FXML
     private Label headingLabel;

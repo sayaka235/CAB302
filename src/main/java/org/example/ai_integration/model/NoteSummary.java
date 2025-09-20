@@ -1,4 +1,5 @@
 package org.example.ai_integration.model;
+
 /**
  * Model class for storing summarized notes in the application.
  * <p>
@@ -23,13 +24,14 @@ public class NoteSummary {
         this.noteID = noteID;
         this.title = title;
         this.notes = notes;
-
     }
+
     /** @return the unique ID of the note summary */
     public long getNoteID() { return noteID; }
+
     /** @return the title of the note summary */
     public String getTitle() { return title; }
+
     /** @return the content of the summarized note */
     public String getNotes() { return notes; }
-
 }

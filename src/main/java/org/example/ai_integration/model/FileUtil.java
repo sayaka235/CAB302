@@ -14,6 +14,7 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
  * Supports reading plain text, PDF, and Word (.docx) files.
  */
 public class FileUtil {
+
     /**
      * Reads the content of the provided file as a {@code String}.
      * <p>

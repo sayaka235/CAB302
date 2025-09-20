@@ -6,8 +6,8 @@ import com.google.gson.JsonObject;
 import okhttp3.*;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
+
 /**
  * API utility class for handling note summaries with Gemini.
  * <p>
@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
  * parsing responses, and extracting usable summaries from the JSON output.
  */
 public class NotesAPI {
+
     /**
      * Gets the Gemini API key from environment variables.
      * <p>
@@ -29,6 +30,7 @@ public class NotesAPI {
         }
         return key.trim();
     }
+
     /** OkHttp client for sending HTTP requests */
     private static final OkHttpClient client = new OkHttpClient();
     /** Gson instance for JSON parsing */
@@ -42,8 +44,7 @@ public class NotesAPI {
      * @param raw the raw string returned by Gemini
      * @return a parsed summary string
      */
-    public static String parseSummary(String raw)
-    {
+    public static String parseSummary(String raw) {
         try {
             final com.google.gson.JsonElement root = com.google.gson.JsonParser.parseString(raw);
 
@@ -98,6 +99,7 @@ public class NotesAPI {
 
         return p0.get("text").getAsString();
     }
+
     /**
      * Extracts the JSON object or array string from text, removing markdown fences if present.
      *
@@ -126,13 +128,14 @@ public class NotesAPI {
 
         return t;
     }
+
     /**
      * Builds a prompt to send to Gemini for generating a summary.
      *
      * @param content the raw content to be summarized
      * @return the constructed prompt string
      */
-    private static String buildPrompt(String content){
+    private static String buildPrompt(String content) {
         return  "Create a notes summary from the content below. Word limit 200.\n\n" +
                 "\"Output STRICTLY as raw JSON (no prose, no markdown fences):\\n\\n\""+
                 "{\n"+
@@ -140,13 +143,14 @@ public class NotesAPI {
                 "\"summary\": \"string\",\n"+
                 "\n}"+ content;
     }
+
     /**
      * Sends a request to Gemini to generate a summary for given content.
      *
      * @param content the content to summarize
      * @return the raw JSON response from Gemini, or an error message
      */
-    public static String generateSummary(String content){
+    public static String generateSummary(String content) {
         String prompt = buildPrompt(content);
 
         JsonArray contentsArray = new JsonArray();
@@ -163,7 +167,7 @@ public class NotesAPI {
         RequestBody body = RequestBody.create(gson.toJson(req), MediaType.parse("application/json"));
 
         OkHttpClient client = new OkHttpClient.Builder()
-                .readTimeout(80, TimeUnit.SECONDS) // Set read timeout to 30 seconds
+                .readTimeout(80, TimeUnit.SECONDS) // Set read timeout to 80 seconds
                 .build();
 
         Request request = new Request.Builder()
@@ -173,20 +177,18 @@ public class NotesAPI {
                 .post(body)
                 .build();
 
-        try (Response response = client.newCall(request).execute())
-        {
+        try (Response response = client.newCall(request).execute()) {
             String responseBody = response.body() != null ? response.body().string() : "";
             System.out.println("DEBUG: " + response.code() + " - " + responseBody);
             if (!response.isSuccessful()) return "Error from Gemini: " + responseBody;
             return responseBody;
         }
-        catch (IOException e)
-        {
+        catch (IOException e) {
             e.printStackTrace();
             return "Error: " + e.getMessage();
         }
-
     }
+
     /**
      * Parses a JSON string into a {@link Content} object and returns its summary.
      *
@@ -198,16 +200,17 @@ public class NotesAPI {
         Content content = gson.fromJson(json, Content.class);
         return content.getSummary();
     }
+
     /**
      * Inner class representing a note summary object returned from Gemini.
      */
     public static class Content {
+        /** The title of the summarized content */
         String title;
+        /** The summary text of the content */
         String summary;
 
-
         /** @return the title of the content */
-        // Getters and setters
         public String getTitle() { return title; }
         /** @param title sets the title of the content */
         public void setTitle(String title) { this.title = title; }
@@ -217,7 +220,3 @@ public class NotesAPI {
         public void setSummary(String summary) { this.summary = summary; }
     }
 }
-
-
-
-

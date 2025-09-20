@@ -1,19 +1,20 @@
 package org.example.ai_integration;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
-import java.net.URL;
-import java.util.Objects;
 
-
+/**
+ * Main entry point for the Quiz application.
+ * <p>
+ * Initializes the primary stage, sets up navigation,
+ * and decides whether to show the login screen or quiz library
+ * depending on whether a user is logged in.
+ */
 public class QuizApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        try { org.example.ai_integration.model.CreateSchema.initAll(); } catch (Exception ignored) {}
+        // Removed CreateSchema.initAll() — schema is now managed externally
 
         Navigator.init(primaryStage, new javafx.scene.layout.StackPane(), 1200, 800);
 

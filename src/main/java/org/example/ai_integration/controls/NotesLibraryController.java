@@ -37,7 +37,6 @@ public class NotesLibraryController {
      * Connects to the database, finds all the notes for the logged-in user,
      * and creates radio buttons so the user can pick one.
      */
-
     @FXML
     private void initialize() {
         String sql = "SELECT noteID, title, notes FROM noteSummary WHERE userID = ?";
@@ -51,7 +50,6 @@ public class NotesLibraryController {
                     long noteID = rs.getLong("noteID");
                     String title = rs.getString("title");
                     String notesContent = rs.getString("notes");
-                    /*String extNotesURL = rs.getString("extNotesURL");*/
 
                     NoteSummary note = new NoteSummary(noteID, title, notesContent);
                     notesList.add(note);
@@ -65,6 +63,7 @@ public class NotesLibraryController {
             e.printStackTrace();
         }
     }
+
     /**
      * Shows an alert message if something goes wrong.
      *
@@ -79,6 +78,7 @@ public class NotesLibraryController {
         a.setContentText(msg);
         a.showAndWait();
     }
+
     /**
      * Goes back to the dashboard when the dashboard button is pressed.
      *
@@ -93,6 +93,7 @@ public class NotesLibraryController {
             alert(Alert.AlertType.ERROR, "Navigation error", e.getMessage());
         }
     }
+
     /**
      * Opens the notes that the user selected.
      * <p>
@@ -101,7 +102,8 @@ public class NotesLibraryController {
      *
      * @param actionEvent the button click event
      */
-    @FXML private void readNotes(ActionEvent actionEvent) {
+    @FXML
+    private void readNotes(ActionEvent actionEvent) {
         try {
             RadioButton selectedRadioButton = (RadioButton) DynamicToggleGroup.getSelectedToggle();
             if (selectedRadioButton != null) {
@@ -118,7 +120,7 @@ public class NotesLibraryController {
             }
         }
         catch(Exception e){
-            alert(Alert.AlertType.ERROR, "No quiz selected", e.getMessage());
+            alert(Alert.AlertType.ERROR, "No note selected", e.getMessage());
         }
     }
 }

@@ -5,7 +5,8 @@ import javafx.fxml.FXML;
 import javafx.scene.chart.PieChart;
 
 /**
- * Controller for the charts in the user quiz analytics page.
+ * Controller for the charts in the user quiz analytics page
+ * .
  * This class is connected to {@code chart-view.fxml}.
  */
 
