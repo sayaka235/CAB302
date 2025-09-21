@@ -274,9 +274,6 @@ public final class QuizDao {
         }
     }
 
-    // -----------------------------
-    // Delete quiz
-    // -----------------------------
     public static boolean deleteQuiz(long quizId, long userId) throws SQLException {
         try (Connection c = Database.getConnection()) {
             c.setAutoCommit(false);
