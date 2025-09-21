@@ -10,7 +10,7 @@
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
-<StackPane prefHeight="700.0" prefWidth="700.0" style="-fx-background-color: linear-gradient(to bottom, #b3c7f7, #244678);" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.ai_integration.controls.NoteSummaryInstanceController">
+<StackPane prefHeight="700.0" prefWidth="700.0" style="-fx-background-color: linear-gradient(to bottom, #b3c7f7, #244678);" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.ai_integration.controls.NoteSummaryInstanceController">
 
     <children>
         <VBox alignment="TOP_CENTER" maxHeight="560" maxWidth="580" spacing="12" style="-fx-background-color: white; -fx-background-radius: 10;">
