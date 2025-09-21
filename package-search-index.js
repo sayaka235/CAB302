@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"org.example.ai_integration"},{"l":"org.example.ai_integration.controls"},{"l":"org.example.ai_integration.model"},{"l":"org.example.ai_integration.tests"}];updateSearchResults();
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"m":"AI.integration","l":"org.example.ai_integration"},{"m":"AI.integration","l":"org.example.ai_integration.controls"},{"m":"AI.integration","l":"org.example.ai_integration.model"}];updateSearchResults();

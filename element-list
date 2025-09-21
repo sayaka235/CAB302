@@ -1,4 +1,4 @@
+module:AI.integration
 org.example.ai_integration
 org.example.ai_integration.controls
 org.example.ai_integration.model
-org.example.ai_integration.tests
