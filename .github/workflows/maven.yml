@@ -5,6 +5,10 @@ on:
     branches: [ "Main" ]
   pull_request:
     branches: [ "Main" ]
+    permissions:
+  contents: write  
+  pages: write 
+  id-token: write 
 
 jobs:
   build:
