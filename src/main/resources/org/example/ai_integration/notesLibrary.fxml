@@ -6,7 +6,7 @@
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane xmlns="http://javafx.com/javafx/21"
+<BorderPane xmlns="http://javafx.com/javafx/24.0.1"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="org.example.ai_integration.controls.NotesLibraryController"
             style="-fx-background-color: linear-gradient(to bottom, #b3c7f7, #244678);">
